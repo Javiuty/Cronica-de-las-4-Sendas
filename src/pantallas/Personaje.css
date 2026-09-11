@@ -263,6 +263,17 @@
   flex: 0 0 auto;
   width: 100%;
 }
+.nombre__fila {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+.nombre__fila .nombre__input { flex: 1; min-width: 0; }
+.nombre__azar {
+  flex: 0 0 auto;
+  padding: 0 14px;
+  white-space: nowrap;
+}
 .nombre__input {
   width: 100%;
   box-sizing: border-box;

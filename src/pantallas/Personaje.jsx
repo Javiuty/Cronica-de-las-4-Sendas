@@ -8,7 +8,7 @@ import './Personaje.css'
 
 const ICONOS_OFICIOS = [IconoEspada, IconoCapucha, IconoCruz, IconoArco]
 
-export default function Personaje({ s, elegirOficio, elegirObjeto, setNombre, comenzar, irMenu }) {
+export default function Personaje({ s, elegirOficio, elegirObjeto, setNombre, nombreAzar, comenzar, irMenu }) {
   const of = oficioDe(s)
   const Icono = ICONOS_OFICIOS[s.oficio] || IconoEspada
   const objeto = of.objetos[s.objetoIni] || of.objetos[0]
@@ -117,6 +117,7 @@ export default function Personaje({ s, elegirOficio, elegirObjeto, setNombre, co
 
           <div className="sobretitulo sobretitulo--seccion personaje__seccion">III · Tu nombre</div>
           <div className="nombre">
+            <div className="nombre__fila">
             <input
               ref={inputNombre}
               className={'nombre__input' + (faltaNombre ? ' nombre__input--error' : '')}
@@ -129,6 +130,15 @@ export default function Personaje({ s, elegirOficio, elegirObjeto, setNombre, co
               aria-invalid={faltaNombre}
               aria-describedby={faltaNombre ? 'aviso-nombre' : undefined}
             />
+            <button
+              type="button"
+              className="btn-ghost btn-ghost--mini nombre__azar"
+              onClick={() => { setFaltaNombre(false); nombreAzar() }}
+              title="Un nombre al azar"
+            >
+              Al azar
+            </button>
+            </div>
             <div className="nombre__aviso" id="aviso-nombre" role="alert" aria-live="polite">
               {faltaNombre ? 'El cronista necesita un nombre que escribir.' : ''}
             </div>

@@ -6,6 +6,16 @@ Juego de rol de fantasía medieval narrado por una IA. Eliges entre tres o cuatr
 
 Portado a **React 19 + Vite** desde el prototipo en formato `.dc.html` que sigue en `src/resources/` como referencia.
 
+## Pantallas
+
+| Menú principal | Creador de personaje |
+|---|---|
+| ![Menú con las losas de piedra](docs/menu.jpg) | ![Oficio, retrato y objeto inicial, con nombre al azar](docs/personaje.jpg) |
+
+| Cómo se juega | La tirada |
+|---|---|
+| ![Las cinco reglas en una tablilla](docs/reglas.jpg) | ![El d20 de piedra con el resultado](docs/dado.jpg) |
+
 ## Arrancar
 
 ```bash
@@ -49,7 +59,7 @@ src/
 
 ## Personaje
 
-Cada oficio tiene un **retrato ilustrado** (`src/assets/personajes/<clave>.jpg`) que se muestra en el creador dentro de un marco de piedra y, recortado a busto, en el panel de partida. Los objetos iniciales tienen su **ilustración** (`src/assets/objetos/<nombre-en-minusculas>.jpg`), usada en las tarjetas del creador y en el zurrón. Si falta una imagen, aparece un marcador de piedra con el icono del oficio o el rombo de rareza; basta con soltar el archivo en su carpeta. Listas con nombres, formato y prompts en `src/assets/personajes/LISTA.md` y `src/assets/objetos/LISTA.md`.
+Cada oficio tiene un **retrato ilustrado** (`src/assets/personajes/<clave>.jpg`) que se muestra en el creador dentro de un marco de piedra y, recortado a busto, en el panel de partida. El nombre se puede escribir o sacar **al azar** de una lista de nombres castellanos medievales (`NOMBRES` en `src/juego/datos.js`). Los objetos iniciales tienen su **ilustración** (`src/assets/objetos/<nombre-en-minusculas>.jpg`), usada en las tarjetas del creador y en el zurrón. Si falta una imagen, aparece un marcador de piedra con el icono del oficio o el rombo de rareza; basta con soltar el archivo en su carpeta. Listas con nombres, formato y prompts en `src/assets/personajes/LISTA.md` y `src/assets/objetos/LISTA.md`.
 
 ## Armas
 

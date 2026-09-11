@@ -154,6 +154,15 @@ export const OFICIOS = [
   },
 ]
 
+// Nombres para el botón "Al azar" del creador: castellanos medievales, de ambos géneros.
+export const NOMBRES = [
+  'Ysolde', 'Nuño', 'Brígida', 'Sancho', 'Elvira', 'Lope', 'Aldonza', 'Gonzalo', 'Urraca', 'Ordoño',
+  'Jimena', 'Fortún', 'Berenguela', 'Íñigo', 'Mencía', 'Ramiro', 'Sol', 'Bermudo', 'Leonor', 'Tello',
+  'Oria', 'Pelayo', 'Mayor', 'Vela', 'Sabina', 'Munio', 'Toda', 'Diego', 'Gontrodo', 'Rodrigo',
+  'Elo', 'García', 'Teresa', 'Ximeno', 'Marina', 'Galindo', 'Sancha', 'Ferrán', 'Andrea', 'Martín',
+  'Estefanía', 'Álvar', 'Inés', 'Suero', 'Beatriz', 'Osorio', 'Juana', 'Gutierre', 'Catalina', 'Vermudo',
+]
+
 export const REGLAS = [
   { n: 'I', t: 'Eliges, no escribes', d: 'Cada encrucijada trae tres o cuatro opciones. El cronista las inventa a partir de lo que ha pasado, de tu oficio y de lo que llevas encima.' },
   { n: 'II', t: 'Un d20 contra una dificultad', d: 'Antes de elegir ves la dificultad de cada opción («incierta · dif 13»). Al pulsar rueda un d20: igualarla o superarla es éxito; quedarte a tres o menos es éxito con coste; por debajo, fallo. El cronista narra el resultado, nunca lo contradice.' },

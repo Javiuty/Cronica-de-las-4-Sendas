@@ -57,6 +57,7 @@ export default function App() {
           elegirOficio={c.elegirOficio}
           elegirObjeto={c.elegirObjeto}
           setNombre={c.setNombre}
+          nombreAzar={c.nombreAzar}
           comenzar={c.comenzar}
           irMenu={c.irMenu}
         />

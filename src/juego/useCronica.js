@@ -2,7 +2,7 @@
 // guardado en localStorage y la conversación con el cronista.
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { BONO_OBJETO, CLAVE, FRASES, OFICIOS, RASGOS_CERO } from './datos'
+import { BONO_OBJETO, CLAVE, FRASES, NOMBRES, OFICIOS, RASGOS_CERO } from './datos'
 import { ARMAS_VACIAS, ajusteDe, armaPara, armasDe, arquetipo, combateDe, dificultadDe, efectosDe, largoDe, musicaDe, normalizarArma, sellosVisiblesDe, tonoDe, vidaInicialDe } from './derivados'
 import { pedirCronica } from './cronista'
 import { pulirRespuesta } from './estilo'
@@ -138,6 +138,10 @@ export function useCronica() {
   // ---- personaje y opciones -------------------------------------------------
 
   const setNombre = (e) => patch({ nombre: e.target.value })
+  const nombreAzar = () => patch((prev) => {
+    const posibles = NOMBRES.filter((n) => n !== prev.nombre)
+    return { nombre: posibles[Math.floor(Math.random() * posibles.length)] }
+  })
   const elegirOficio = (i) => patch({ oficio: i, objetoIni: 0 })
   const elegirObjeto = (i) => patch({ objetoIni: i })
   const elegirDificultad = (k) => patch({ optDificultad: k })
@@ -351,7 +355,7 @@ export function useCronica() {
   return {
     s, logRef,
     irMenu, irPersonaje, irOpciones, irReglas,
-    setNombre, elegirOficio, elegirObjeto, elegirDificultad, elegirDuracion, toggleSellos, toggleMusica, toggleEfectos,
+    setNombre, nombreAzar, elegirOficio, elegirObjeto, elegirDificultad, elegirDuracion, toggleSellos, toggleMusica, toggleEfectos,
     comenzar, continuar, abandonar, reintentar, elegir, invocar,
   }
 }
