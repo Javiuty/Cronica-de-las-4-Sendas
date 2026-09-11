@@ -77,7 +77,7 @@ export function parsear(txt) {
 // Reglas de estilo: lenguaje de hoy y escenas que se puedan ver.
 const ESTILO =
   'COMO ESCRIBES. Espanol de Espana actual y llano: el que usaria hoy alguien contando la escena a un amigo. ' +
-  'La ambientacion es medieval; el vocabulario, no. Prohibidos los arcaismos y las palabras rebuscadas: nada de "yantar", "otrora", "doquier", "menester", "vusted", "fementido", "ora... ora", "aljibe", "sayo", "zaguan", "postigo", "ristre", "yelmo" (di "casco"), "cota" (di "cota de malla" solo si hace falta), "faltriquera" (di "bolsa"), "mesnada", "hueste", "lid", "lidiar", "pardiez", "vive Dios". ' +
+  'La ambientacion es medieval; el vocabulario, no. Prohibidos los arcaismos y las palabras rebuscadas: nada de "yantar", "otrora", "doquier", "menester", "vusted", "fementido", "ora... ora", "aljibe", "sayo", "zaguan", "postigo", "ristre", "yelmo" (di "casco"), "cota" (di "cota de malla" solo si hace falta), "faltriquera" (di "bolsa"), "mesnada", "hueste", "lid", "lidiar", "pardiez", "vive Dios", "ribazo" (di "terraplen" o "cuesta"), "sien" (di "frente" o "lado de la cabeza"). ' +
   'Si una palabra no la diria alguien hoy por la calle, cambiala por la normal. ' +
   'Tampoco uses el tratamiento de "vos" ni formas como "habeis", "sois" o "vuestra merced": la gente se habla de tu o de usted. ' +
   'EJEMPLO MAL: "Otrora, en el zaguan de la posada, el mesonero os conmina a yantar antes de partir." ' +
@@ -160,7 +160,7 @@ export async function pedirCronica(s, eleccion, tirada, { largo, tono }) {
         role: 'user',
         content:
           'Estado actual:\n' + JSON.stringify(estado, null, 1) +
-          '\n\nEscribe el siguiente fragmento de la cronica. Recuerda: espanol de hoy, llano y concreto, frases cortas; ni una sola palabra antigua o en desuso (nada de otrora, menester, doquier, yantar, hueste, zaguan, sayo, faltriquera ni parecidas). Ambientacion medieval, vocabulario actual.',
+          '\n\nEscribe el siguiente fragmento de la cronica. Recuerda: espanol de hoy, llano y concreto, frases cortas; ni una sola palabra antigua o en desuso (nada de otrora, menester, doquier, yantar, hueste, zaguan, sayo, faltriquera, ribazo, sien ni parecidas). Ambientacion medieval, vocabulario actual.',
       },
     ],
   })
