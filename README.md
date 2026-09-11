@@ -4,16 +4,14 @@ Juego de rol de fantasía medieval narrado por una IA. Eliges entre tres o cuatr
 
 ![Una encrucijada en partida: la escena con la tormenta encima, la crónica y las cuatro opciones, y la ficha del personaje](docs/partida.jpg)
 
-Portado a **React 19 + Vite** desde el prototipo en formato `.dc.html` que sigue en `src/resources/` como referencia.
-
 ## Pantallas
 
-| Menú principal | Creador de personaje |
-|---|---|
+| Menú principal                                 | Creador de personaje                                                        |
+| ----------------------------------------------- | --------------------------------------------------------------------------- |
 | ![Menú con las losas de piedra](docs/menu.jpg) | ![Oficio, retrato y objeto inicial, con nombre al azar](docs/personaje.jpg) |
 
-| Cómo se juega | La tirada |
-|---|---|
+| Cómo se juega                                       | La tirada                                           |
+| ---------------------------------------------------- | --------------------------------------------------- |
 | ![Las cinco reglas en una tablilla](docs/reglas.jpg) | ![El d20 de piedra con el resultado](docs/dado.jpg) |
 
 ## Arrancar
