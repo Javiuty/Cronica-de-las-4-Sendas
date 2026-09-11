@@ -154,13 +154,12 @@ export const OFICIOS = [
   },
 ]
 
-// Nombres para el botón "Al azar" del creador: castellanos medievales, de ambos géneros.
+// Nombres para el botón "Al azar" del creador: masculinos castellanos medievales.
 export const NOMBRES = [
-  'Ysolde', 'Nuño', 'Brígida', 'Sancho', 'Elvira', 'Lope', 'Aldonza', 'Gonzalo', 'Urraca', 'Ordoño',
-  'Jimena', 'Fortún', 'Berenguela', 'Íñigo', 'Mencía', 'Ramiro', 'Sol', 'Bermudo', 'Leonor', 'Tello',
-  'Oria', 'Pelayo', 'Mayor', 'Vela', 'Sabina', 'Munio', 'Toda', 'Diego', 'Gontrodo', 'Rodrigo',
-  'Elo', 'García', 'Teresa', 'Ximeno', 'Marina', 'Galindo', 'Sancha', 'Ferrán', 'Andrea', 'Martín',
-  'Estefanía', 'Álvar', 'Inés', 'Suero', 'Beatriz', 'Osorio', 'Juana', 'Gutierre', 'Catalina', 'Vermudo',
+  'Nuño', 'Sancho', 'Lope', 'Gonzalo', 'Ordoño', 'Fortún', 'Íñigo', 'Ramiro', 'Bermudo', 'Tello',
+  'Pelayo', 'Vela', 'Munio', 'Diego', 'Rodrigo', 'García', 'Ximeno', 'Galindo', 'Ferrán', 'Martín',
+  'Álvar', 'Suero', 'Osorio', 'Gutierre', 'Vermudo', 'Fruela', 'Gómez', 'Arias', 'Fáfila', 'Aznar',
+  'Ansur', 'Fernán', 'Pero', 'Nuño', 'Beltrán', 'Ruy', 'Gil', 'Domingo', 'Esteban', 'Lorenzo',
 ]
 
 export const REGLAS = [
