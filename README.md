@@ -2,6 +2,8 @@
 
 Juego de rol de fantasía medieval narrado por una IA. Eliges entre tres o cuatro opciones, rueda un d20 contra una dificultad y el cronista escribe lo que pasa. Honor, astucia, piedad y codicia suben solos según lo que eliges y, al cerrar el libro, dicen quién eras.
 
+![Una encrucijada en partida: la escena con la tormenta encima, la crónica y las cuatro opciones, y la ficha del personaje](docs/partida.jpg)
+
 Portado a **React 19 + Vite** desde el prototipo en formato `.dc.html` que sigue en `src/resources/` como referencia.
 
 ## Arrancar
