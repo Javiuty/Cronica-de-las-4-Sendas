@@ -366,6 +366,7 @@
   width: 100%;
   height: 100%;
 }
+.heroe__retrato { width: 60px; height: 60px; }
 .heroe__datos {
   flex: 1;
   min-width: 0;
@@ -596,6 +597,16 @@
   transform: rotate(45deg);
   background: var(--rareza, rgba(223, 233, 240, 0.6));
   box-shadow: 0 0 8px var(--rareza, transparent), inset 0 0 0 1px rgba(0, 0, 0, 0.4);
+}
+.objeto-z__imagen {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 3px;
+  background-size: cover;
+  background-position: center;
+  border: 1px solid var(--rareza, rgba(223, 233, 240, 0.3));
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.6), 0 0 8px rgba(0, 0, 0, 0.5);
 }
 .objeto-z__cuerpo {
   flex: 1;

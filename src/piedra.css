@@ -320,49 +320,5 @@
 }
 .tablilla__marco--fino { inset: 7px; }
 
-/* ---- Muestras de color ------------------------------------------------------ */
-.muestras {
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: 7px;
-  padding: 5px;
-  border-radius: 4px;
-  background: rgba(0, 0, 0, 0.4);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8), 0 1px 0 rgba(255, 255, 255, 0.06);
-}
-.muestra {
-  position: relative;
-  width: 22px;
-  height: 22px;
-  padding: 0;
-  border-radius: 50%;
-  border: 1px solid rgba(0, 0, 0, 0.7);
-  cursor: pointer;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), inset 0 -2px 3px rgba(0, 0, 0, 0.45), 0 1px 2px rgba(0, 0, 0, 0.6);
-  transition: transform 0.2s ease, box-shadow 0.25s ease;
-}
-.muestra:hover { transform: scale(1.12); }
-.muestra--on {
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.25),
-    0 0 0 2px #0c1218,
-    0 0 0 3.5px var(--oro),
-    0 0 10px rgba(236, 208, 111, 0.55);
-}
-.muestra--ninguna {
-  background: linear-gradient(135deg, #2a3038 0%, #1a2028 100%);
-}
-.muestra--ninguna::after {
-  content: '';
-  position: absolute;
-  left: 4px;
-  right: 4px;
-  top: 50%;
-  height: 1.5px;
-  background: rgba(223, 233, 240, 0.55);
-  transform: rotate(-45deg);
-}
-.muestra:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--oro); }
-
 .segmentos--mini { gap: 3px; padding: 3px; }
 .segmentos--mini .segmento { font-size: 9.5px; letter-spacing: 0.12em; padding: 6px 9px; }

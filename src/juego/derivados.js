@@ -1,6 +1,6 @@
 // Valores calculados a partir del estado. Puros: sin efectos ni hooks.
 
-import { ARQUETIPO, BONO_POR_RAREZA, DEFAULTS, DIF, DIFICULTADES, DURACIONES, OFICIOS, PRESETS_APARIENCIA, RASGOS, RIESGO, TIPOS_ARMA } from './datos'
+import { ARQUETIPO, BONO_POR_RAREZA, DEFAULTS, DIF, DIFICULTADES, DURACIONES, OFICIOS, RASGOS, RIESGO, TIPOS_ARMA } from './datos'
 
 export const dificultadClaveDe = (s) => (DIFICULTADES[s.optDificultad] ? s.optDificultad : DEFAULTS.dificultad)
 export const duracionClaveDe = (s) => (DURACIONES[s.optDuracion] ? s.optDuracion : DEFAULTS.duracion)
@@ -13,7 +13,6 @@ export const sellosVisiblesDe = (s) => (s.optSellos === null || s.optSellos === 
 export const efectosDe = (s) => (s.optEfectos === null || s.optEfectos === undefined ? DEFAULTS.efectos : s.optEfectos)
 export const musicaDe = (s) => (s.optMusica === null || s.optMusica === undefined ? DEFAULTS.musica : s.optMusica)
 export const oficioDe = (s) => OFICIOS[s.oficio] || OFICIOS[0]
-export const aparienciaDe = (s) => s.apariencia || PRESETS_APARIENCIA[s.oficio] || PRESETS_APARIENCIA[0]
 
 /** Número a igualar con el d20, ya con el ajuste de dificultad de la partida. */
 export function dificultadDe(op, ajuste = 0) {

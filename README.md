@@ -32,47 +32,22 @@ src/
     cronista.js           prompt de cada encrucijada y llamada al modelo
     useCronica.js         hook con toda la lógica de partida, el guardado local y las preferencias
     musica.js             música ambiental generada con Web Audio (sin archivos de audio)
-    modelos.js            carga de figuras GLB con caché (GLTFLoader + meshopt)
-    figuras3d.js          personaje 3D paramétrico (cuerpo entero) y objetos, en Three.js
+    imagenes.js           retratos e ilustraciones de objetos por nombre
   componentes/
-    Figura3D.jsx          lienzo WebGL: personaje (cuerpo o busto) u objeto, girando despacio
+    Retrato.jsx           retrato de oficio en marco de piedra, con fundido y marcador
     FondoFX.jsx           pavesas, niebla y clima (lluvia, nieve, relámpagos) en shaders
     Fondo.jsx             fondo de escena con fundido y paneo (imágenes por terreno-cielo)
     Dado.jsx              velo del d20
     Iconos.jsx            iconos SVG de las reglas
   pantallas/
     Menu (+ Menu.css, losas de piedra), Reglas, Opciones y Fin (tablillas con placas),
-    Personaje (+ Personaje.css, creador con aspecto personalizable), Carga,
+    Personaje (+ Personaje.css, oficio, retrato y objeto), Carga,
     Juego (+ Juego.css, crónica y ficha en tablillas)
 ```
 
 ## Personaje
 
-Un oficio puede tener **figura propia en GLB** (campo `modelo` en `OFICIOS`, en `src/juego/datos.js`): se carga con caché, se escala a la altura común y se usa tanto en el creador como en el retrato. Ahora mismo ningún oficio la usa: todos van con el personaje paramétrico para compartir estilo. Para los oficios con figura propia el editor de aspecto se oculta.
-
-Las figuras pueden traer esqueleto y animaciones: se reproduce la que se llame `Idle` (o la primera). Escala, apoyo y encuadre del retrato se calculan solos al cargar.
-
-### Añadir un personaje de Mixamo
-
-1. En [mixamo.com](https://www.mixamo.com) elige un personaje y una animación (por ejemplo **Idle** o **Breathing Idle**).
-2. Descarga con: Format **FBX Binary**, Skin **With Skin**, Frames per second **30**, Keyframe Reduction **none**.
-3. Importa al juego (convierte a GLB, optimiza y lo deja en su carpeta):
-
-   ```bash
-   pnpm importar:fbx ladron "C:/Descargas/Ladron Idle.fbx"
-   ```
-
-4. Añade en `OFICIOS` (`src/juego/datos.js`) el `import` y `modelo: { url }` que el script imprime al terminar.
-
-Opcionales en `modelo`: `rotY` (radianes, si no mira al frente), `offsetY`, `alto` y `cabeza` (metros, para forzar la medida), `animacion` (nombre del clip).
-
-Otros GLB (Sketchfab, Blender): optimízalos antes de meterlos en `src/assets/characters/<oficio>/`:
-
-```bash
-pnpm exec gltf-transform optimize origen.glb destino.glb --compress meshopt --texture-compress webp --texture-size 2048
-```
-
-Los oficios sin figura propia usan personajes 3D de cuerpo entero construidos por parámetros (sin modelos externos): cara con mandíbula, orejas, nariz, ojos y cejas; pecho y cintura; brazos y piernas cilíndricos; faldón y capa trapezoidal; sombra en el suelo y ciclo de reposo por partes (respiración, cabeza, brazos, capa). Ajustes: piel, peinado (6), color de pelo, color de ojos, barba (4), tocado (5), ropa y capa. Cada oficio trae un aspecto por defecto y el jugador puede cambiar tono de piel, peinado, color de pelo, barba, tocado, color de ropa y capa, o pedir uno al azar. El aspecto se guarda con la partida y se usa en el retrato del panel lateral. Paletas y presets en `src/juego/datos.js`; la geometría en `construirPersonaje` de `src/juego/figuras3d.js`.
+Cada oficio tiene un **retrato ilustrado** (`src/assets/personajes/<clave>.jpg`) que se muestra en el creador dentro de un marco de piedra y, recortado a busto, en el panel de partida. Los objetos iniciales tienen su **ilustración** (`src/assets/objetos/<nombre-en-minusculas>.jpg`), usada en las tarjetas del creador y en el zurrón. Si falta una imagen, aparece un marcador de piedra con el icono del oficio o el rombo de rareza; basta con soltar el archivo en su carpeta. Listas con nombres, formato y prompts en `src/assets/personajes/LISTA.md` y `src/assets/objetos/LISTA.md`.
 
 ## Armas
 
@@ -105,4 +80,3 @@ Las preferencias se guardan en `localStorage` y sobreviven entre sesiones; la pa
 - `pnpm build` compila a `dist/`
 - `pnpm preview` sirve la compilación
 - `pnpm lint` oxlint
-- `pnpm importar:fbx <carpeta> <archivo.fbx>` importa un personaje FBX (Mixamo) como GLB optimizado

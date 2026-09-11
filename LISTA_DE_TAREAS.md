@@ -4,3 +4,4 @@
 - Avatares mejores. Ahora mismo se usa low-poly y es cutre.
 - Añadir más clases. Ahora solo hay 4.
 - Añadir backend y base de datos en producción
+- Añadir nueva sección de personajes

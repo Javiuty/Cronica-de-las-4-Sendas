@@ -96,11 +96,11 @@ export const FRASES = [
   'Un perro ladra en un pueblo que aún no existe.',
 ]
 
-// Un oficio puede llevar `modelo: { url }` (GLB importado con `pnpm importar:fbx`) para usar
-// una figura propia en vez del personaje paramétrico. Opcionales: rotY, offsetY, alto, cabeza, animacion.
+// `clave` es el nombre de archivo de su retrato en src/assets/personajes/.
 export const OFICIOS = [
   {
     nombre: 'Mercenario',
+    clave: 'mercenario',
     nota: 'Cobras por pelear y a veces cumples.',
     oro: 6,
     armas: [{ nombre: 'Espada mellada', rareza: 'comun', tipo: 'cuerpo', bono: 2, nota: 'Corta si insistes.' }],
@@ -112,6 +112,7 @@ export const OFICIOS = [
   },
   {
     nombre: 'Ladrón de caminos',
+    clave: 'ladron',
     nota: 'Nadie te ha cogido todavía.',
     oro: 10,
     armas: [
@@ -126,6 +127,7 @@ export const OFICIOS = [
   },
   {
     nombre: 'Fraile mendicante',
+    clave: 'fraile',
     nota: 'Pides pan y das consejos.',
     oro: 3,
     armas: [],
@@ -137,6 +139,7 @@ export const OFICIOS = [
   },
   {
     nombre: 'Cazador',
+    clave: 'cazador',
     nota: 'Sabes esperar y sabes dónde duele.',
     oro: 5,
     armas: [
@@ -149,42 +152,6 @@ export const OFICIOS = [
       { nombre: 'Silbato de hueso', rareza: 'arcana', nota: 'Llama a cosas que no son perros.' },
     ],
   },
-]
-
-// ---- Aspecto del personaje --------------------------------------------------
-export const PIELES = ['#f1d2b6', '#d9a877', '#b98a63', '#8d5f3d', '#5b3a26']
-export const COLORES_PELO = ['#1b1712', '#4a2f1d', '#8b5a2b', '#c98f3f', '#d9c9a8', '#8c8c8c']
-export const OJOS = ['#2b2118', '#5a3a1e', '#3b5a80', '#4a6a3a', '#8a8a8a']
-export const PELOS = [
-  { clave: 'corto', nombre: 'Corto' },
-  { clave: 'melena', nombre: 'Melena' },
-  { clave: 'coleta', nombre: 'Coleta' },
-  { clave: 'trenza', nombre: 'Trenza' },
-  { clave: 'tonsura', nombre: 'Tonsura' },
-  { clave: 'calvo', nombre: 'Rapado' },
-]
-export const BARBAS = [
-  { clave: 'ninguna', nombre: 'Ninguna' },
-  { clave: 'bigote', nombre: 'Bigote' },
-  { clave: 'perilla', nombre: 'Perilla' },
-  { clave: 'poblada', nombre: 'Poblada' },
-]
-export const TOCADOS = [
-  { clave: 'ninguno', nombre: 'Ninguno' },
-  { clave: 'venda', nombre: 'Venda' },
-  { clave: 'capucha', nombre: 'Capucha' },
-  { clave: 'sombrero', nombre: 'Sombrero' },
-  { clave: 'yelmo', nombre: 'Casco' },
-]
-export const ROPAS = ['#1d2a36', '#3b2f26', '#3d4a3a', '#5a2a2a', '#2b3a48', '#6b5a44']
-export const CAPAS = ['#233240', '#7E2B2B', '#2f4a3a', '#3a2b4a', '#6b4f34', '#c8b691']
-
-// Aspecto por defecto de cada oficio (mismo orden que OFICIOS).
-export const PRESETS_APARIENCIA = [
-  { piel: '#b98a63', pelo: 'corto', colorPelo: '#4a2f1d', ojos: '#5a3a1e', barba: 'poblada', tocado: 'ninguno', ropa: '#2b3a48', capa: '#7E2B2B' },
-  { piel: '#d9a877', pelo: 'melena', colorPelo: '#1b1712', ojos: '#2b2118', barba: 'ninguna', tocado: 'capucha', ropa: '#1d2a36', capa: '#233240' },
-  { piel: '#f1d2b6', pelo: 'tonsura', colorPelo: '#8b5a2b', ojos: '#3b5a80', barba: 'perilla', tocado: 'ninguno', ropa: '#3b2f26', capa: null },
-  { piel: '#b98a63', pelo: 'coleta', colorPelo: '#4a2f1d', ojos: '#4a6a3a', barba: 'perilla', tocado: 'venda', ropa: '#3d4a3a', capa: '#2f4a3a' },
 ]
 
 export const REGLAS = [

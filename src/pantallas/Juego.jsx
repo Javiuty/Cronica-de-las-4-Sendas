@@ -1,12 +1,14 @@
-import Figura3D from '../componentes/Figura3D'
-import { IconoArco, IconoEspada } from '../componentes/Iconos'
+import Retrato from '../componentes/Retrato'
+import { IconoArco, IconoCapucha, IconoCruz, IconoEspada } from '../componentes/Iconos'
 import { BONO_OBJETO, COMBATES, MARCAS, ORDEN_ARMAS, RAREZA, RIESGO, TIPOS_ARMA, ZURRON_MAX } from '../juego/datos'
 import {
-  ajusteDe, aparienciaDe, armasDe, combateDe, dificultadDe, lecturaSellos, marcadorDe, oficioDe, riesgoDe, sellosDe,
+  ajusteDe, armasDe, combateDe, dificultadDe, lecturaSellos, marcadorDe, oficioDe, riesgoDe, sellosDe,
 } from '../juego/derivados'
+import { imagenObjeto } from '../juego/imagenes'
 import './Juego.css'
 
 const ICONO_COMBATE = { cuerpo: IconoEspada, distancia: IconoArco }
+const ICONO_OFICIO = { mercenario: IconoEspada, ladron: IconoCapucha, fraile: IconoCruz, cazador: IconoArco }
 
 export default function Juego({ s, logRef, elegir, invocar, reintentar, abandonar }) {
   const of = oficioDe(s)
@@ -108,12 +110,7 @@ export default function Juego({ s, logRef, elegir, invocar, reintentar, abandona
         <div className="lateral__scroll">
           <div className="placa heroe">
             <div className="heroe__retrato">
-              <Figura3D
-                modo="avatar"
-                encuadre="busto"
-                datos={{ apariencia: aparienciaDe(s), oficio: of.nombre, modelo: of.modelo || null }}
-                className="heroe__figura"
-              />
+              <Retrato oficio={of} Icono={ICONO_OFICIO[of.clave]} variante="busto" className="heroe__figura" />
             </div>
             <div className="heroe__datos">
               <div className="heroe__nombre">{(s.nombre || '').trim() || 'Sin nombre'}</div>
@@ -204,7 +201,11 @@ export default function Juego({ s, logRef, elegir, invocar, reintentar, abandona
                         aria-pressed={armado}
                         title={titulo}
                       >
-                        <span className="objeto-z__rombo" style={{ '--rareza': rar.tinta }} aria-hidden="true" />
+                        {imagenObjeto(o.nombre) ? (
+                          <span className="objeto-z__imagen" style={{ backgroundImage: `url(${imagenObjeto(o.nombre)})`, '--rareza': rar.tinta }} aria-hidden="true" />
+                        ) : (
+                          <span className="objeto-z__rombo" style={{ '--rareza': rar.tinta }} aria-hidden="true" />
+                        )}
                         <span className="objeto-z__cuerpo">
                           <span className="objeto-z__cabecera">
                             <span className="objeto-z__nombre" style={{ color: gastado ? undefined : rar.tinta }}>{o.nombre}</span>

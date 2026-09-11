@@ -1,11 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import './App.css'
 import './piedra.css'
 import Dado from './componentes/Dado'
 import Fondo from './componentes/Fondo'
 import FondoFX from './componentes/FondoFX'
 import { efectosDe } from './juego/derivados'
-import { precargarModelos } from './juego/modelos'
 import { useCronica } from './juego/useCronica'
 import Carga from './pantallas/Carga'
 import Fin from './pantallas/Fin'
@@ -20,8 +19,6 @@ export default function App() {
   const { s } = c
   // Las losas del menú avivan las pavesas del fondo al pasar el ratón.
   const [avivar, setAvivar] = useState(false)
-  // Descarga anticipada de las figuras GLB de los oficios.
-  useEffect(() => { precargarModelos() }, [])
 
   let pantalla = null
   switch (s.fase) {
@@ -59,8 +56,6 @@ export default function App() {
           s={s}
           elegirOficio={c.elegirOficio}
           elegirObjeto={c.elegirObjeto}
-          setApariencia={c.setApariencia}
-          aparienciaAzar={c.aparienciaAzar}
           setNombre={c.setNombre}
           comenzar={c.comenzar}
           irMenu={c.irMenu}

@@ -2,7 +2,7 @@
 // guardado en localStorage y la conversación con el cronista.
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { BARBAS, BONO_OBJETO, CAPAS, CLAVE, COLORES_PELO, FRASES, OFICIOS, OJOS, PELOS, PIELES, PRESETS_APARIENCIA, RASGOS_CERO, ROPAS, TOCADOS } from './datos'
+import { BONO_OBJETO, CLAVE, FRASES, OFICIOS, RASGOS_CERO } from './datos'
 import { ARMAS_VACIAS, ajusteDe, armaPara, armasDe, arquetipo, combateDe, dificultadDe, efectosDe, largoDe, musicaDe, normalizarArma, sellosVisiblesDe, tonoDe, vidaInicialDe } from './derivados'
 import { pedirCronica } from './cronista'
 import { pulirRespuesta } from './estilo'
@@ -16,7 +16,7 @@ export const ESTADO_INICIAL = {
   lugar: '', ambiente: '', prosa: '', opciones: [], log: [], full: [],
   escena: null, cargando: false, error: null, epilogo: '', tituloFinal: '', muerto: false,
   haySave: false, dado: null, usando: null, gastados: [],
-  nombre: '', oficio: 0, objetoIni: 0, apariencia: { ...PRESETS_APARIENCIA[0] },
+  nombre: '', oficio: 0, objetoIni: 0,
   optDificultad: null, optDuracion: null, optSellos: null, optMusica: null, optEfectos: null,
   cargaPct: 0, cargaFrase: FRASES[0],
 }
@@ -40,7 +40,7 @@ function guardar(s) {
       turno: s.turno, vida: s.vida, vidaMax: s.vidaMax, oro: s.oro, inv: s.inv,
       armas: s.armas, rasgos: s.rasgos, lugar: s.lugar, ambiente: s.ambiente,
       prosa: s.prosa, opciones: s.opciones, log: s.log, escena: s.escena, gastados: s.gastados,
-      full: s.full, nombre: s.nombre, oficio: s.oficio, objetoIni: s.objetoIni, apariencia: s.apariencia,
+      full: s.full, nombre: s.nombre, oficio: s.oficio, objetoIni: s.objetoIni,
       optDificultad: s.optDificultad, optDuracion: s.optDuracion, optSellos: s.optSellos,
     }))
   } catch { /* sin almacenamiento */ }
@@ -138,17 +138,7 @@ export function useCronica() {
   // ---- personaje y opciones -------------------------------------------------
 
   const setNombre = (e) => patch({ nombre: e.target.value })
-  const elegirOficio = (i) => patch({ oficio: i, objetoIni: 0, apariencia: { ...(PRESETS_APARIENCIA[i] || PRESETS_APARIENCIA[0]) } })
-  const setApariencia = (cambio) => patch((prev) => ({ apariencia: { ...prev.apariencia, ...cambio } }))
-  const aparienciaAzar = () => {
-    const al = (lista) => lista[Math.floor(Math.random() * lista.length)]
-    patch({
-      apariencia: {
-        piel: al(PIELES), pelo: al(PELOS).clave, colorPelo: al(COLORES_PELO), ojos: al(OJOS), barba: al(BARBAS).clave,
-        tocado: al(TOCADOS).clave, ropa: al(ROPAS), capa: Math.random() < 0.25 ? null : al(CAPAS),
-      },
-    })
-  }
+  const elegirOficio = (i) => patch({ oficio: i, objetoIni: 0 })
   const elegirObjeto = (i) => patch({ objetoIni: i })
   const elegirDificultad = (k) => patch({ optDificultad: k })
   const elegirDuracion = (k) => patch({ optDuracion: k })
@@ -279,7 +269,7 @@ export function useCronica() {
     if (!d) return irPersonaje()
     if (!d.gastados) d.gastados = []
     if (!d.full) d.full = []
-    if (!d.apariencia) d.apariencia = { ...(PRESETS_APARIENCIA[d.oficio] || PRESETS_APARIENCIA[0]) }
+    delete d.apariencia
     if (!d.armas) {
       // Partidas anteriores: una o dos armas sin tipo. Van a la ranura que les toque.
       d.armas = { ...ARMAS_VACIAS }
@@ -361,7 +351,7 @@ export function useCronica() {
   return {
     s, logRef,
     irMenu, irPersonaje, irOpciones, irReglas,
-    setNombre, elegirOficio, elegirObjeto, setApariencia, aparienciaAzar, elegirDificultad, elegirDuracion, toggleSellos, toggleMusica, toggleEfectos,
+    setNombre, elegirOficio, elegirObjeto, elegirDificultad, elegirDuracion, toggleSellos, toggleMusica, toggleEfectos,
     comenzar, continuar, abandonar, reintentar, elegir, invocar,
   }
 }
