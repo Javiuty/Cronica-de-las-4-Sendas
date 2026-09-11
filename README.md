@@ -8,7 +8,7 @@ Juego de rol de fantasía medieval narrado por una IA. Eliges entre tres o cuatr
 
 | Menú principal                                 | Creador de personaje                                                        |
 | ----------------------------------------------- | --------------------------------------------------------------------------- |
-| ![Menú con las losas de piedra](docs/menu.jpg) | ![Oficio, retrato y objeto inicial, con nombre al azar](docs/personaje.jpg) |
+| ![Menú con las losas de piedra](docs/menu.jpg) | ![Cuatro paneles de oficio en acordeón, con objeto inicial y nombre](docs/personaje.jpg) |
 
 | Cómo se juega                                       | La tirada                                           |
 | ---------------------------------------------------- | --------------------------------------------------- |
@@ -51,13 +51,13 @@ src/
     Iconos.jsx            iconos SVG de las reglas
   pantallas/
     Menu (+ Menu.css, losas de piedra), Reglas, Opciones y Fin (tablillas con placas),
-    Personaje (+ Personaje.css, oficio, retrato y objeto), Carga,
+    Personaje (+ Personaje.css, paneles de oficio en acordeón), Carga,
     Juego (+ Juego.css, crónica y ficha en tablillas)
 ```
 
 ## Personaje
 
-Cada oficio tiene un **retrato ilustrado** (`src/assets/personajes/<clave>.jpg`) que se muestra en el creador dentro de un marco de piedra y, recortado a busto, en el panel de partida. Si hay **variantes** (`<clave>-2.jpg`, `<clave>-3.jpg`…), el creador muestra flechas y puntos para elegir entre ellas, y la elegida viaja con la partida. Las miniaturas de la lista de oficios y las losetas de objeto usan las mismas imágenes. El nombre se puede escribir o sacar **al azar** de una lista de nombres castellanos medievales (`NOMBRES` en `src/juego/datos.js`). Los objetos iniciales tienen su **ilustración** (`src/assets/objetos/<nombre-en-minusculas>.jpg`), usada en las tarjetas del creador y en el zurrón. Si falta una imagen, aparece un marcador de piedra con el icono del oficio o el rombo de rareza; basta con soltar el archivo en su carpeta. Listas con nombres, formato y prompts en `src/assets/personajes/LISTA.md` y `src/assets/objetos/LISTA.md`.
+El creador es una pantalla de selección con **cuatro paneles a lo alto**, uno por oficio, con su retrato ilustrado (`src/assets/personajes/<clave>.jpg`). El elegido se ensancha en acordeón y despliega su ficha: frase, dotación inicial, las tres losetas de objeto y la descripción del elegido. El nombre y los botones van en una banda de piedra abajo. En la partida, el retrato aparece recortado a busto en el panel lateral. Si hay **variantes** (`<clave>-2.jpg`, `<clave>-3.jpg`…), el creador muestra flechas y puntos para elegir entre ellas, y la elegida viaja con la partida. Las miniaturas de la lista de oficios y las losetas de objeto usan las mismas imágenes. El nombre se puede escribir o sacar **al azar** de una lista de nombres castellanos medievales (`NOMBRES` en `src/juego/datos.js`). Los objetos iniciales tienen su **ilustración** (`src/assets/objetos/<nombre-en-minusculas>.jpg`), usada en las tarjetas del creador y en el zurrón. Si falta una imagen, aparece un marcador de piedra con el icono del oficio o el rombo de rareza; basta con soltar el archivo en su carpeta. Listas con nombres, formato y prompts en `src/assets/personajes/LISTA.md` y `src/assets/objetos/LISTA.md`.
 
 ## Armas
 

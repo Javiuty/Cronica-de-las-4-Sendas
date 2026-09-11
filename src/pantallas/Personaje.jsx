@@ -1,6 +1,5 @@
 import { useRef, useState } from 'react'
 import { IconoArco, IconoCapucha, IconoCruz, IconoEspada } from '../componentes/Iconos'
-import Retrato from '../componentes/Retrato'
 import { OFICIOS, RAREZA, TIPOS_ARMA } from '../juego/datos'
 import { oficioDe, vidaInicialDe } from '../juego/derivados'
 import { imagenObjeto, retratoDe, retratosDe } from '../juego/imagenes'
@@ -10,7 +9,6 @@ const ICONOS_OFICIOS = [IconoEspada, IconoCapucha, IconoCruz, IconoArco]
 
 export default function Personaje({ s, elegirOficio, elegirObjeto, elegirRetrato, setNombre, nombreAzar, comenzar, irMenu }) {
   const of = oficioDe(s)
-  const Icono = ICONOS_OFICIOS[s.oficio] || IconoEspada
   const objeto = of.objetos[s.objetoIni] || of.objetos[0]
   const rarezaObjeto = RAREZA[objeto.rareza] || RAREZA.comun
   const variantes = retratosDe(of)
@@ -38,127 +36,122 @@ export default function Personaje({ s, elegirOficio, elegirObjeto, elegirRetrato
 
   return (
     <section className="personaje entrar">
-      {/* ---- I · Oficio --------------------------------------------------- */}
-      <div className="tablilla tablilla--columna personaje__col">
-        <span className="tablilla__marco tablilla__marco--fino" aria-hidden="true" />
-        <div className="personaje__scroll">
-          <div className="sobretitulo sobretitulo--seccion">I · Tu oficio</div>
-          <ul className="oficios">
-            {OFICIOS.map((x, i) => {
-              const on = i === s.oficio
-              const IconoOf = ICONOS_OFICIOS[i]
-              const mini = retratoDe(x)
-              return (
-                <li key={x.nombre} className={'placa oficio' + (on ? ' oficio--on' : '')} style={{ '--i': i }}>
-                  <button type="button" className="oficio__boton" onClick={() => elegirOficio(i)} aria-pressed={on}>
-                    <span className="oficio__mini">
-                      {mini ? (
-                        <span className="oficio__mini-imagen" style={{ backgroundImage: `url(${mini})` }} />
-                      ) : (
-                        <span className="oficio__mini-icono">{IconoOf && <IconoOf />}</span>
-                      )}
-                    </span>
-                    <span className="oficio__cuerpo">
-                      <span className="oficio__nombre">{x.nombre}</span>
-                      <span className="oficio__nota">{x.nota}</span>
-                    </span>
-                  </button>
-                </li>
-              )
-            })}
-          </ul>
+      {/* ---- Cuatro paneles: el elegido se ensancha y despliega su ficha -------- */}
+      <div className="paneles">
+        {OFICIOS.map((x, i) => {
+          const on = i === s.oficio
+          const Icono = ICONOS_OFICIOS[i]
+          const url = on ? retratoDe(x, indice) : retratoDe(x)
+          return (
+            <div key={x.nombre} className={'panel' + (on ? ' panel--on' : '')} style={{ '--i': i }}>
+              <span className="panel__piedra" aria-hidden="true" />
+              <div className="panel__hueco">
+                <div className="panel__retrato">
+                  {url ? (
+                    <div key={url} className="panel__imagen" style={{ backgroundImage: `url(${url})` }} />
+                  ) : (
+                    <div className="panel__marcador"><Icono /></div>
+                  )}
+                  <div className="panel__pie">
+                    <div className="panel__nombre">{x.nombre}</div>
+                    {!on && <div className="panel__nota">{x.nota}</div>}
+                  </div>
+                  {on && variantes.length > 1 && (
+                    <div className="variantes" role="group" aria-label="Variantes del retrato">
+                      <button type="button" className="variantes__flecha" onClick={() => girarRetrato(-1)} aria-label="Retrato anterior">‹</button>
+                      <span className="variantes__puntos">
+                        {variantes.map((_, k) => (
+                          <button
+                            key={k}
+                            type="button"
+                            className={'variantes__punto' + (k === indice ? ' variantes__punto--on' : '')}
+                            onClick={() => elegirRetrato(k)}
+                            aria-label={'Retrato ' + (k + 1)}
+                            aria-pressed={k === indice}
+                          />
+                        ))}
+                      </span>
+                      <button type="button" className="variantes__flecha" onClick={() => girarRetrato(1)} aria-label="Retrato siguiente">›</button>
+                    </div>
+                  )}
+                </div>
 
-          <div className="sobretitulo sobretitulo--seccion personaje__seccion">Lo que llevas al partir</div>
-          <ul className="dotacion">
-            <li className="dotacion__fila"><span>Monedas</span><strong>{of.oro}</strong></li>
-            <li className="dotacion__fila"><span>Aliento</span><strong>{vidaInicialDe(s)}</strong></li>
-            {['cuerpo', 'distancia'].map((tipo) => {
-              const a = (of.armas || []).find((w) => w.tipo === tipo)
-              return (
-                <li key={tipo} className={'dotacion__fila' + (a ? '' : ' dotacion__fila--vacia')}>
-                  <span>{TIPOS_ARMA[tipo].nombre}</span>
-                  <strong>{a ? a.nombre + ' +' + a.bono : TIPOS_ARMA[tipo].vacio}</strong>
-                </li>
-              )
-            })}
-          </ul>
-        </div>
-      </div>
+                {on ? (
+                  <div className="ficha">
+                    <p className="ficha__frase">{x.nota}</p>
 
-      {/* ---- Retrato ------------------------------------------------------ */}
-      <div className="personaje__centro">
-        <div className="retrato-marco">
-          <Retrato oficio={of} indice={indice} Icono={Icono} variante="cuerpo" />
-          <div className="retrato-marco__pie">
-            <div className="retrato-marco__oficio">{of.nombre}</div>
-            <div className="retrato-marco__nota">{of.nota}</div>
-          </div>
-          {variantes.length > 1 && (
-            <div className="variantes" role="group" aria-label="Variantes del retrato">
-              <button type="button" className="variantes__flecha" onClick={() => girarRetrato(-1)} aria-label="Retrato anterior">‹</button>
-              <span className="variantes__puntos">
-                {variantes.map((_, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    className={'variantes__punto' + (i === indice ? ' variantes__punto--on' : '')}
-                    onClick={() => elegirRetrato(i)}
-                    aria-label={'Retrato ' + (i + 1)}
-                    aria-pressed={i === indice}
-                  />
-                ))}
-              </span>
-              <button type="button" className="variantes__flecha" onClick={() => girarRetrato(1)} aria-label="Retrato siguiente">›</button>
+                    <div className="sobretitulo sobretitulo--seccion ficha__seccion">Lo que llevas al partir</div>
+                    <ul className="dotacion">
+                      <li className="dotacion__fila"><span>Monedas</span><strong>{x.oro}</strong></li>
+                      <li className="dotacion__fila"><span>Aliento</span><strong>{vidaInicialDe(s)}</strong></li>
+                      {['cuerpo', 'distancia'].map((tipo) => {
+                        const a = (x.armas || []).find((w) => w.tipo === tipo)
+                        return (
+                          <li key={tipo} className={'dotacion__fila' + (a ? '' : ' dotacion__fila--vacia')}>
+                            <span>{TIPOS_ARMA[tipo].nombre}</span>
+                            <strong>{a ? a.nombre + ' +' + a.bono : TIPOS_ARMA[tipo].vacio}</strong>
+                          </li>
+                        )
+                      })}
+                    </ul>
+
+                    <div className="sobretitulo sobretitulo--seccion ficha__seccion">Lo que llevas encima</div>
+                    <ul className="losetas">
+                      {x.objetos.map((o, k) => {
+                        const elegido = k === s.objetoIni
+                        const rar = RAREZA[o.rareza] || RAREZA.comun
+                        const img = imagenObjeto(o.nombre)
+                        return (
+                          <li key={o.nombre} className="loseta-item" style={{ '--i': k }}>
+                            <button
+                              type="button"
+                              className={'loseta' + (elegido ? ' loseta--on' : '')}
+                              style={{ '--rareza': rar.tinta }}
+                              onClick={() => elegirObjeto(k)}
+                              aria-pressed={elegido}
+                              title={o.nombre + ' (' + rar.nombre + '): ' + o.nota}
+                            >
+                              <span className="loseta__vitrina">
+                                {img ? (
+                                  <span className="loseta__imagen" style={{ backgroundImage: `url(${img})` }} />
+                                ) : (
+                                  <span className="loseta__marcador"><span className="rombo loseta__rombo" /></span>
+                                )}
+                                <span className="loseta__rareza">{rar.nombre}</span>
+                              </span>
+                              <span className="loseta__nombre">{o.nombre}</span>
+                            </button>
+                          </li>
+                        )
+                      })}
+                    </ul>
+                    <div className="placa objeto-elegido">
+                      <span className="objeto-elegido__rombo rombo" style={{ '--rareza': rarezaObjeto.tinta }} aria-hidden="true" />
+                      <span className="objeto-elegido__cuerpo">
+                        <span className="objeto-elegido__nombre">{objeto.nombre}</span>
+                        <span className="objeto-elegido__nota">{objeto.nota}</span>
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <button type="button" className="panel__elegir" onClick={() => elegirOficio(i)} aria-label={'Elegir ' + x.nombre} />
+                )}
+              </div>
             </div>
-          )}
-        </div>
+          )
+        })}
       </div>
 
-      {/* ---- II · Objeto y III · Nombre ------------------------------------ */}
-      <div className="tablilla tablilla--columna personaje__col">
+      {/* ---- Banda inferior: nombre y botones ---------------------------------- */}
+      <div className="tablilla banda">
         <span className="tablilla__marco tablilla__marco--fino" aria-hidden="true" />
-        <div className="personaje__scroll">
-          <div className="sobretitulo sobretitulo--seccion">II · Lo que llevas encima</div>
-          <ul className="losetas">
-            {of.objetos.map((x, i) => {
-              const on = i === s.objetoIni
-              const rar = RAREZA[x.rareza] || RAREZA.comun
-              const img = imagenObjeto(x.nombre)
-              return (
-                <li key={x.nombre} className="loseta-item" style={{ '--i': i }}>
-                  <button
-                    type="button"
-                    className={'loseta' + (on ? ' loseta--on' : '')}
-                    style={{ '--rareza': rar.tinta }}
-                    onClick={() => elegirObjeto(i)}
-                    aria-pressed={on}
-                    title={x.nombre + ' (' + rar.nombre + '): ' + x.nota}
-                  >
-                    <span className="loseta__vitrina">
-                      {img ? (
-                        <span className="loseta__imagen" style={{ backgroundImage: `url(${img})` }} />
-                      ) : (
-                        <span className="loseta__marcador"><span className="rombo loseta__rombo" /></span>
-                      )}
-                      <span className="loseta__rareza">{rar.nombre}</span>
-                    </span>
-                    <span className="loseta__nombre">{x.nombre}</span>
-                  </button>
-                </li>
-              )
-            })}
-          </ul>
-          <div className="placa objeto-elegido">
-            <span className="objeto-elegido__rombo rombo" style={{ '--rareza': rarezaObjeto.tinta }} aria-hidden="true" />
-            <span className="objeto-elegido__cuerpo">
-              <span className="objeto-elegido__nombre">{objeto.nombre}</span>
-              <span className="objeto-elegido__nota">{objeto.nota}</span>
-            </span>
-          </div>
-
-          <div className="sobretitulo sobretitulo--seccion personaje__seccion">III · Tu nombre</div>
+        <div className="banda__contenido">
+          <button type="button" className="btn-ghost banda__atras" onClick={irMenu}>Atrás</button>
           <div className="nombre">
             <div className="nombre__fila">
+              <span className={'nombre__etiqueta' + (faltaNombre ? ' nombre__etiqueta--aviso' : '')} id="aviso-nombre" role={faltaNombre ? 'alert' : undefined}>
+                {faltaNombre ? 'El cronista necesita un nombre' : 'Tu nombre'}
+              </span>
               <input
                 ref={inputNombre}
                 className={'nombre__input' + (faltaNombre ? ' nombre__input--error' : '')}
@@ -180,15 +173,8 @@ export default function Personaje({ s, elegirOficio, elegirObjeto, elegirRetrato
                 Al azar
               </button>
             </div>
-            <div className="nombre__aviso" id="aviso-nombre" role="alert" aria-live="polite">
-              {faltaNombre ? 'El cronista necesita un nombre que escribir.' : ''}
-            </div>
           </div>
-
-          <div className="botonera botonera--pegada personaje__botonera">
-            <button type="button" className="btn-oro btn-oro--ancho" onClick={partir}>Partir al camino</button>
-            <button type="button" className="btn-ghost" onClick={irMenu}>Atrás</button>
-          </div>
+          <button type="button" className="btn-oro banda__partir" onClick={partir}>Partir al camino</button>
         </div>
       </div>
     </section>
