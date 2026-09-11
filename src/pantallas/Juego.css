@@ -234,6 +234,7 @@
   right: var(--margen);
   bottom: 2.6vh;
   width: var(--lateral-ancho);
+  box-sizing: border-box; /* el relleno cuenta dentro del ancho */
   display: flex;
   flex-direction: column;
   padding: 16px 14px 14px;
