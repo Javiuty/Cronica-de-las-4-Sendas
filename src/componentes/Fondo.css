@@ -5,6 +5,26 @@
   overflow: hidden;
   background: var(--fondo);
 }
+.fondo--paralaje .fondo__capa {
+  transform: translate3d(var(--px, 0px), var(--py, 0px), 0) scale(1.05);
+  transition: transform 0.9s cubic-bezier(0.2, 0.7, 0.2, 1);
+  animation: fondo-aparecer 1.6s ease both; /* sin paneo: lo sustituye el paralaje */
+}
+/* Pulso cálido de luz sobre el horizonte */
+.fondo__pulso {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(60% 45% at 50% 42%, rgba(236, 190, 110, 0.22) 0%, rgba(236, 190, 110, 0.06) 45%, transparent 75%);
+  mix-blend-mode: screen;
+  animation: fondo-pulso 7s ease-in-out infinite alternate;
+}
+@keyframes fondo-pulso {
+  from { opacity: 0.35; transform: scale(1); }
+  to { opacity: 1; transform: scale(1.06); }
+}
+.fondo--cielo-noche .fondo__pulso { background: radial-gradient(60% 45% at 50% 42%, rgba(150, 180, 240, 0.14) 0%, transparent 70%); }
+.fondo--cielo-tormenta .fondo__pulso { opacity: 0.4; }
 .fondo__capa {
   position: absolute;
   inset: -3%;
@@ -20,6 +40,8 @@
   from { opacity: 0; }
   to { opacity: 1; }
 }
+/* El fundido entre escenas dura 1,6 s */
+.fondo--vivo .fondo__capa { animation-duration: 1.6s; }
 @keyframes fondo-paneo {
   from { transform: scale(1.02) translate3d(-1%, 0.5%, 0); }
   to { transform: scale(1.06) translate3d(1%, -0.5%, 0); }
@@ -28,10 +50,10 @@
 /* En partida la escena se ve por la ventana: menos oscurecida */
 .fondo--vivo .fondo__capa { filter: saturate(1) brightness(1); }
 .velo--suave.velo--vertical {
-  background: linear-gradient(180deg, rgba(6, 18, 27, 0.18) 0%, rgba(6, 18, 27, 0.02) 40%, rgba(4, 12, 19, 0.5) 100%);
+  background: linear-gradient(180deg, rgba(6, 18, 27, 0.1) 0%, rgba(6, 18, 27, 0) 40%, rgba(4, 12, 19, 0.2) 100%);
 }
 .velo--suave.velo--radial {
-  background: radial-gradient(125% 92% at 50% 42%, rgba(39, 121, 167, 0.02) 0%, rgba(4, 10, 16, 0.32) 100%);
+  background: radial-gradient(125% 92% at 50% 42%, rgba(39, 121, 167, 0.02) 0%, rgba(4, 10, 16, 0.22) 100%);
 }
 .velo { transition: background 1.2s ease; }
 
@@ -58,5 +80,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .fondo__capa { animation: fondo-aparecer 0.01s both; }
+  .fondo__pulso { animation: none; opacity: 0.6; }
+  .fondo--paralaje .fondo__capa { transition: none; }
   .velo--cielo { transition: none; }
 }

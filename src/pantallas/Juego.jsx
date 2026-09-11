@@ -1,5 +1,5 @@
-import Retrato from '../componentes/Retrato'
 import { IconoArco, IconoCapucha, IconoCruz, IconoEspada } from '../componentes/Iconos'
+import Retrato from '../componentes/Retrato'
 import { BONO_OBJETO, COMBATES, MARCAS, ORDEN_ARMAS, RAREZA, RIESGO, TIPOS_ARMA, ZURRON_MAX } from '../juego/datos'
 import {
   ajusteDe, armasDe, combateDe, dificultadDe, lecturaSellos, marcadorDe, oficioDe, riesgoDe, sellosDe,
@@ -22,32 +22,27 @@ export default function Juego({ s, logRef, elegir, invocar, reintentar, abandona
 
   return (
     <section className="juego">
-      {/* ---- Ventana a la escena + crónica ------------------------------ */}
-      <div className="columna-cronica">
-        <div className="ventana" aria-hidden="true">
-          <span className="ventana__piedra" />
-          <div className="ventana__hueco">
-            <div className="ventana__pie">
-              <div className="cronica__lugar">{s.lugar || 'El umbral'}</div>
-              <div className="cronica__meta">
-                <span>{s.ambiente || ''}</span>
-                <span className="cronica__marcador">{marcadorDe(s)}</span>
-              </div>
-            </div>
+      {/* Degradado que asienta el texto sobre el paisaje: transparente arriba, opaco abajo */}
+      <div className="juego__degradado" aria-hidden="true" />
+
+      {/* ---- Crónica flotante, abajo a la izquierda --------------------------- */}
+      <div className="cronica">
+        <header className="cronica__cabecera">
+          <div className="cronica__lugar">{s.lugar || 'El umbral'}</div>
+          <div className="cronica__meta">
+            <span>{s.ambiente || ''}</span>
+            <span className="cronica__marcador">{marcadorDe(s)}</span>
           </div>
-        </div>
+        </header>
 
-      <div className="tablilla tablilla--columna cronica">
-        <span className="tablilla__marco tablilla__marco--fino" aria-hidden="true" />
-
-        <div ref={logRef} className="placa cronica__log">
-          {s.log.map((e, i) => (
-            <p key={i} className="cronica__pasado">{e.texto}</p>
-          ))}
+        <div ref={logRef} className="cronica__log">
           <p className="cronica__prosa entrar" key={prosa}>
             <span className="cronica__capitular">{capitular}</span>
             {resto}
           </p>
+          {s.log.slice().reverse().map((e, i) => (
+            <p key={s.log.length - 1 - i} className="cronica__pasado">{e.texto}</p>
+          ))}
         </div>
 
         {s.cargando && (
@@ -76,7 +71,6 @@ export default function Juego({ s, logRef, elegir, invocar, reintentar, abandona
               const arma = combate !== 'ninguno' ? armas[combate] : null
               return (
                 <button key={i} type="button" className="opcion" style={{ '--i': i }} onClick={() => elegir(i)}>
-                  <span className="opcion__brillo" aria-hidden="true" />
                   <span className="opcion__marca">{MARCAS[i] || '·'}</span>
                   <span className="opcion__texto">{op.texto}</span>
                   <span className="opcion__etiquetas">
@@ -102,11 +96,9 @@ export default function Juego({ s, logRef, elegir, invocar, reintentar, abandona
           </div>
         )}
       </div>
-      </div>
 
-      {/* ---- Ficha ----------------------------------------------------- */}
-      <aside className="tablilla tablilla--columna lateral">
-        <span className="tablilla__marco tablilla__marco--fino" aria-hidden="true" />
+      {/* ---- Ficha traslúcida, a la derecha ------------------------------------ */}
+      <aside className="lateral">
         <div className="lateral__scroll">
           <div className="placa heroe">
             <div className="heroe__retrato">
@@ -191,6 +183,7 @@ export default function Juego({ s, logRef, elegir, invocar, reintentar, abandona
                   const titulo = gastado
                     ? o.nombre + ': su sello ya se apagó.'
                     : o.nombre + ': suma +' + bono + ' en la próxima tirada' + (consumible ? ' y se gasta.' : '; después su sello se apaga.')
+                  const img = imagenObjeto(o.nombre)
                   return (
                     <li key={o.nombre} className={'placa objeto-z' + (armado ? ' objeto-z--armado' : '') + (gastado ? ' objeto-z--gastado' : '')}>
                       <button
@@ -201,8 +194,8 @@ export default function Juego({ s, logRef, elegir, invocar, reintentar, abandona
                         aria-pressed={armado}
                         title={titulo}
                       >
-                        {imagenObjeto(o.nombre) ? (
-                          <span className="objeto-z__imagen" style={{ backgroundImage: `url(${imagenObjeto(o.nombre)})`, '--rareza': rar.tinta }} aria-hidden="true" />
+                        {img ? (
+                          <span className="objeto-z__imagen" style={{ backgroundImage: `url(${img})`, '--rareza': rar.tinta }} aria-hidden="true" />
                         ) : (
                           <span className="objeto-z__rombo" style={{ '--rareza': rar.tinta }} aria-hidden="true" />
                         )}

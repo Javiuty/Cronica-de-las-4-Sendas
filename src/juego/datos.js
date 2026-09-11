@@ -12,6 +12,7 @@ export const DEFAULTS = {
   sellosVisibles: true,
   musica: false,
   efectos: true,
+  ambiente: true,
 }
 
 // Dificultad: ajusta el aliento inicial y el número a igualar en las tiradas.

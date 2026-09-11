@@ -1,10 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import './piedra.css'
+import Aves from './componentes/Aves'
 import Dado from './componentes/Dado'
 import Fondo from './componentes/Fondo'
 import FondoFX from './componentes/FondoFX'
-import { efectosDe } from './juego/derivados'
+import { establecerAmbiente } from './juego/ambiente'
+import { ambienteDe, efectosDe } from './juego/derivados'
 import { useCronica } from './juego/useCronica'
 import Carga from './pantallas/Carga'
 import Fin from './pantallas/Fin'
@@ -43,6 +45,7 @@ export default function App() {
           toggleSellos={c.toggleSellos}
           toggleMusica={c.toggleMusica}
           toggleEfectos={c.toggleEfectos}
+          toggleAmbiente={c.toggleAmbiente}
           irMenu={c.irMenu}
         />
       )
@@ -94,20 +97,28 @@ export default function App() {
   const terreno = escena && escena.terreno ? String(escena.terreno).toLowerCase() : null
   const precipitacion = terreno === 'nieve' && (cielo === 'tormenta' || cielo === 'noche' || cielo === 'niebla')
     ? 'nieve'
-    : cielo === 'tormenta' ? 'lluvia' : null
+    : cielo === 'tormenta' ? 'lluvia'
+      : (terreno === 'yermo' || terreno === 'arena') && cielo !== 'niebla' ? 'polvo' : null
   const nieblaExtra = cielo === 'niebla' ? 1 : 0
   const relampagos = cielo === 'tormenta'
   const enEscena = !!escena
 
+  // Sonido de ambiente según la escena (se apaga fuera de la partida)
+  const ambienteOn = ambienteDe(s)
+  useEffect(() => {
+    establecerAmbiente(ambienteOn && enEscena, enEscena ? { cielo, terreno } : null)
+  }, [ambienteOn, enEscena, cielo, terreno])
+
   return (
     <>
-      <Fondo escena={escena} vivo={enEscena} cielo={cielo} />
+      <Fondo escena={escena} vivo={enEscena} cielo={cielo} paralaje={enEscena} />
       <div className={'velo velo--vertical' + (enEscena ? ' velo--suave' : '')} />
       <div className={'velo velo--radial' + (enEscena ? ' velo--suave' : '')} />
       <div className={'velo velo--cielo' + (cielo ? ' velo--cielo-' + cielo : '')} />
       {efectosDe(s) && (
         <FondoFX intensidad={intensidad} precipitacion={precipitacion} niebla={nieblaExtra} relampagos={relampagos} />
       )}
+      {efectosDe(s) && enEscena && <Aves cielo={cielo} />}
 
       <div className="escenario">{pantalla}</div>
 

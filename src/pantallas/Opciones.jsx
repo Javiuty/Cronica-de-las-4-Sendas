@@ -1,6 +1,6 @@
 import { IconoEscudo, IconoLira, IconoPavesas, IconoReloj, IconoSellos } from '../componentes/Iconos'
 import { DIFICULTADES, DURACIONES, ORDEN_DIFICULTADES, ORDEN_DURACIONES } from '../juego/datos'
-import { dificultadClaveDe, duracionClaveDe, efectosDe, musicaDe, sellosVisiblesDe } from '../juego/derivados'
+import { ambienteDe, dificultadClaveDe, duracionClaveDe, efectosDe, musicaDe, sellosVisiblesDe } from '../juego/derivados'
 import './Opciones.css'
 
 function Ajuste({ i, Icono, nombre, nota, children }) {
@@ -50,8 +50,9 @@ function Segmentos({ orden, tabla, valor, elegir, etiqueta }) {
   )
 }
 
-export default function Opciones({ s, elegirDificultad, elegirDuracion, toggleSellos, toggleMusica, toggleEfectos, irMenu }) {
+export default function Opciones({ s, elegirDificultad, elegirDuracion, toggleSellos, toggleMusica, toggleEfectos, toggleAmbiente, irMenu }) {
   const musica = musicaDe(s)
+  const ambiente = ambienteDe(s)
   const dificultad = dificultadClaveDe(s)
   const duracion = duracionClaveDe(s)
   const sellos = sellosVisiblesDe(s)
@@ -73,19 +74,23 @@ export default function Opciones({ s, elegirDificultad, elegirDuracion, toggleSe
             <Interruptor on={musica} onClick={toggleMusica} etiqueta="Música" />
           </Ajuste>
 
-          <Ajuste i={1} Icono={IconoEscudo} nombre="Dificultad" nota={DIFICULTADES[dificultad].nota}>
+          <Ajuste i={1} Icono={IconoPavesas} nombre="Sonido de ambiente" nota={ambiente ? 'Viento, lluvia, grillos o pájaros según la escena.' : 'Sin sonido de escena.'}>
+            <Interruptor on={ambiente} onClick={toggleAmbiente} etiqueta="Sonido de ambiente" />
+          </Ajuste>
+
+          <Ajuste i={2} Icono={IconoEscudo} nombre="Dificultad" nota={DIFICULTADES[dificultad].nota}>
             <Segmentos orden={ORDEN_DIFICULTADES} tabla={DIFICULTADES} valor={dificultad} elegir={elegirDificultad} etiqueta="Dificultad" />
           </Ajuste>
 
-          <Ajuste i={2} Icono={IconoReloj} nombre="Duración" nota={DURACIONES[duracion].nota}>
+          <Ajuste i={3} Icono={IconoReloj} nombre="Duración" nota={DURACIONES[duracion].nota}>
             <Segmentos orden={ORDEN_DURACIONES} tabla={DURACIONES} valor={duracion} elegir={elegirDuracion} etiqueta="Duración" />
           </Ajuste>
 
-          <Ajuste i={3} Icono={IconoSellos} nombre="Sellos visibles" nota={sellos ? 'Ves cómo sube cada rasgo turno a turno.' : 'Solo se encienden al alcanzar el umbral.'}>
+          <Ajuste i={4} Icono={IconoSellos} nombre="Sellos visibles" nota={sellos ? 'Ves cómo sube cada rasgo turno a turno.' : 'Solo se encienden al alcanzar el umbral.'}>
             <Interruptor on={sellos} onClick={toggleSellos} etiqueta="Sellos visibles" />
           </Ajuste>
 
-          <Ajuste i={4} Icono={IconoPavesas} nombre="Efectos de fondo" nota={efectos ? 'Pavesas y niebla animadas tras la interfaz.' : 'Desactivados: menos carga gráfica.'}>
+          <Ajuste i={5} Icono={IconoPavesas} nombre="Efectos de fondo" nota={efectos ? 'Pavesas y niebla animadas tras la interfaz.' : 'Desactivados: menos carga gráfica.'}>
             <Interruptor on={efectos} onClick={toggleEfectos} etiqueta="Efectos de fondo" />
           </Ajuste>
         </ul>

@@ -4,7 +4,7 @@
 //
 // Props:
 //   intensidad    0..1  aviva pavesas y niebla (se interpola suavemente)
-//   precipitacion 'lluvia' | 'nieve' | null
+//   precipitacion 'lluvia' | 'nieve' | 'polvo' | null
 //   niebla        0..1  niebla extra (escenas con niebla)
 //   relampagos    bool  destellos ocasionales (tormenta)
 
@@ -119,7 +119,14 @@ const VERT_GOTAS = /* glsl */ `
 
   void main() {
     float x; float y; float tamano;
-    if (uClima > 1.5) {
+    if (uClima > 2.5) {
+      // Polvo: motas que cruzan despacio en horizontal, con leves subidas y bajadas
+      float vel = 0.08 + semilla * 0.12;
+      x = mod(position.x + 1.1 + uTiempo * vel + semilla * 5.0, 2.2) - 1.1;
+      y = position.y + sin(uTiempo * (0.5 + semilla) + semilla * 6.2832) * 0.05;
+      tamano = tam * (0.35 + semilla * 0.4);
+      vAlfa = (0.28 + semilla * 0.3) * uFuerza;
+    } else if (uClima > 1.5) {
       // Nieve: cae despacio y se balancea
       float vel = 0.07 + semilla * 0.09;
       y = mod(position.y + 1.2 - uTiempo * vel + semilla * 9.0, 2.4) - 1.2;
@@ -147,7 +154,11 @@ const FRAG_GOTAS = /* glsl */ `
     vec2 c = gl_PointCoord - 0.5;
     float a;
     vec3 col;
-    if (uClima > 1.5) {
+    if (uClima > 2.5) {
+      float d = length(c) * 2.0;
+      a = smoothstep(1.0, 0.3, d) * 0.9;
+      col = vec3(0.86, 0.74, 0.5);
+    } else if (uClima > 1.5) {
       float d = length(c) * 2.0;
       a = smoothstep(1.0, 0.2, d);
       col = vec3(0.93, 0.95, 1.0);
@@ -179,7 +190,7 @@ function crearPuntos(n, tamMin, tamMax, grandes) {
   return geo
 }
 
-const CLIMA = { lluvia: 1, nieve: 2 }
+const CLIMA = { lluvia: 1, nieve: 2, polvo: 3 }
 
 export default function FondoFX({ intensidad = 0.6, precipitacion = null, niebla = 0, relampagos = false }) {
   const host = useRef(null)

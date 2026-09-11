@@ -1,0 +1,54 @@
+/* Aves cruzando el cielo */
+.aves {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.bandada {
+  position: absolute;
+  width: 140px;
+  height: 60px;
+  transform: scale(var(--escala, 1));
+  animation: bandada-cruzar var(--dur, 24s) linear both;
+}
+.bandada--derecha { left: -160px; }
+.bandada--izquierda { right: -160px; }
+.bandada--izquierda .ave { transform: scaleX(-1); }
+@keyframes bandada-cruzar {
+  from { translate: 0 0; }
+  to { translate: calc(100vw + 320px) -6vh; }
+}
+.bandada--izquierda { animation-name: bandada-cruzar-izq; }
+@keyframes bandada-cruzar-izq {
+  from { translate: 0 0; }
+  to { translate: calc(-100vw - 320px) -6vh; }
+}
+.ave {
+  position: absolute;
+  width: 22px;
+  height: 11px;
+  overflow: visible;
+}
+.ave__ala {
+  fill: none;
+  stroke: rgba(12, 18, 26, 0.85);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  transform-origin: 20px 12px;
+  animation: aletear 0.55s ease-in-out infinite alternate;
+  animation-delay: calc(var(--fase, 0s) * -1);
+}
+.ave__ala--der { animation-name: aletear-der; }
+@keyframes aletear {
+  from { transform: rotate(-22deg); }
+  to { transform: rotate(18deg); }
+}
+@keyframes aletear-der {
+  from { transform: rotate(22deg); }
+  to { transform: rotate(-18deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .aves { display: none; }
+}

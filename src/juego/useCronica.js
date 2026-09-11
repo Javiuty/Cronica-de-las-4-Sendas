@@ -3,7 +3,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { BONO_OBJETO, CLAVE, FRASES, NOMBRES, OFICIOS, RASGOS_CERO } from './datos'
-import { ARMAS_VACIAS, ajusteDe, armaPara, armasDe, arquetipo, combateDe, dificultadDe, efectosDe, largoDe, musicaDe, normalizarArma, sellosVisiblesDe, tonoDe, vidaInicialDe } from './derivados'
+import { ARMAS_VACIAS, ajusteDe, ambienteDe, armaPara, armasDe, arquetipo, combateDe, dificultadDe, efectosDe, largoDe, musicaDe, normalizarArma, sellosVisiblesDe, tonoDe, vidaInicialDe } from './derivados'
 import { pedirCronica } from './cronista'
 import { pulirRespuesta } from './estilo'
 import { establecerMusica } from './musica'
@@ -17,11 +17,11 @@ export const ESTADO_INICIAL = {
   escena: null, cargando: false, error: null, epilogo: '', tituloFinal: '', muerto: false,
   haySave: false, dado: null, usando: null, gastados: [],
   nombre: '', oficio: 0, objetoIni: 0, retrato: 0,
-  optDificultad: null, optDuracion: null, optSellos: null, optMusica: null, optEfectos: null,
+  optDificultad: null, optDuracion: null, optSellos: null, optMusica: null, optEfectos: null, optAmbiente: null,
   cargaPct: 0, cargaFrase: FRASES[0],
 }
 
-const PREFS = ['optDificultad', 'optDuracion', 'optSellos', 'optMusica', 'optEfectos']
+const PREFS = ['optDificultad', 'optDuracion', 'optSellos', 'optMusica', 'optEfectos', 'optAmbiente']
 
 // ---- localStorage -----------------------------------------------------------
 
@@ -109,19 +109,13 @@ export function useCronica() {
     clearInterval(intCarga.current)
   }, [])
 
-  // El registro baja al final cada vez que llega prosa nueva.
-  useEffect(() => {
-    const el = logRef.current
-    if (el) el.scrollTop = el.scrollHeight
-  }, [s.prosa])
-
   // Guardado automático mientras se juega y no hay petición en curso.
   useEffect(() => {
     if (s.fase === 'juego' && !s.cargando) guardar(s)
   }, [s])
 
   // Preferencias persistentes y música.
-  useEffect(() => { guardarPrefs(s) }, [s.optDificultad, s.optDuracion, s.optSellos, s.optMusica, s.optEfectos]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { guardarPrefs(s) }, [s.optDificultad, s.optDuracion, s.optSellos, s.optMusica, s.optEfectos, s.optAmbiente]) // eslint-disable-line react-hooks/exhaustive-deps
   const musica = musicaDe(s)
   useEffect(() => { establecerMusica(musica) }, [musica])
 
@@ -150,6 +144,7 @@ export function useCronica() {
   const toggleSellos = () => patch((prev) => ({ optSellos: !sellosVisiblesDe(prev) }))
   const toggleMusica = () => patch((prev) => ({ optMusica: !musicaDe(prev) }))
   const toggleEfectos = () => patch((prev) => ({ optEfectos: !efectosDe(prev) }))
+  const toggleAmbiente = () => patch((prev) => ({ optAmbiente: !ambienteDe(prev) }))
 
   // ---- animaciones ----------------------------------------------------------
 
@@ -356,7 +351,7 @@ export function useCronica() {
   return {
     s, logRef,
     irMenu, irPersonaje, irOpciones, irReglas,
-    setNombre, nombreAzar, elegirOficio, elegirObjeto, elegirRetrato, elegirDificultad, elegirDuracion, toggleSellos, toggleMusica, toggleEfectos,
+    setNombre, nombreAzar, elegirOficio, elegirObjeto, elegirRetrato, elegirDificultad, elegirDuracion, toggleSellos, toggleMusica, toggleEfectos, toggleAmbiente,
     comenzar, continuar, abandonar, reintentar, elegir, invocar,
   }
 }

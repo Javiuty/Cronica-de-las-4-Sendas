@@ -42,17 +42,19 @@ src/
     cronista.js           prompt de cada encrucijada y llamada al modelo
     useCronica.js         hook con toda la lógica de partida, el guardado local y las preferencias
     musica.js             música ambiental generada con Web Audio (sin archivos de audio)
+    ambiente.js           sonido de escena (viento, lluvia, truenos, grillos, pájaros) con Web Audio
     imagenes.js           retratos e ilustraciones de objetos por nombre
   componentes/
     Retrato.jsx           retrato de oficio en marco de piedra, con fundido y marcador
-    FondoFX.jsx           pavesas, niebla y clima (lluvia, nieve, relámpagos) en shaders
-    Fondo.jsx             fondo de escena con fundido y paneo (imágenes por terreno-cielo)
+    FondoFX.jsx           pavesas, niebla y clima (lluvia, nieve, polvo, relámpagos) en shaders
+    Fondo.jsx             fondo de escena con fundido, paralaje y pulso de luz
+    Aves.jsx              bandadas cruzando el cielo de día
     Dado.jsx              velo del d20
     Iconos.jsx            iconos SVG de las reglas
   pantallas/
     Menu (+ Menu.css, losas de piedra), Reglas, Opciones y Fin (tablillas con placas),
     Personaje (+ Personaje.css, paneles de oficio en acordeón), Carga,
-    Juego (+ Juego.css, crónica y ficha en tablillas)
+    Juego (+ Juego.css, paisaje a pantalla completa, crónica flotante y ficha traslúcida)
 ```
 
 ## Personaje
@@ -63,13 +65,17 @@ El creador es una pantalla de selección con **cuatro paneles a lo alto**, uno p
 
 Dos ranuras: **cuerpo a cuerpo** y **a distancia**. Cada arma tiene un bono de +1 a +4 según lo buena que sea (1 improvisada o gastada, 2 arma corriente, 3 fina, 4 excepcional) y solo suma cuando la opción elegida pide su tipo; el cronista etiqueta cada opción con `combate: cuerpo | distancia | ninguno` y la interfaz lo muestra con un icono de espada o arco. Coger un arma nueva sustituye a la de su ranura; perderla, romperla o entregarla la vacía (`quitar_arma: cuerpo | distancia` en los efectos). El prompt exige que todo cambio de inventario, dinero o salud que cuente la prosa aparezca en `efectos`, y el cliente elimina objetos por nombre sin distinguir mayúsculas ni tildes. Las armas iniciales están en `OFICIOS` (`armas: [...]`) y las reglas de normalización en `normalizarArma` de `src/juego/derivados.js`.
 
-## Fondos de escena y clima
+## La pantalla de partida
 
-El cronista devuelve en cada turno una `escena` (`terreno`, `cielo`, `estructuras`). Con ella:
+La ilustración de la escena ocupa toda la pantalla. La crónica flota abajo a la izquierda sobre un degradado que va de transparente a opaco, así el cielo y el horizonte quedan limpios; el registro queda anclado al párrafo más reciente y los anteriores se desvanecen por arriba. La ficha del personaje es un panel traslúcido con desenfoque a la derecha. Las opciones son de cristal oscuro con filo dorado.
 
-- **Fondo**: se elige una imagen de `src/assets/fondos/<terreno>-<cielo>.jpg` (o la más parecida si falta) y se funde con la anterior con un paneo lento. Sin imágenes, se usa el castillo general. La lista de combinaciones, prioridades y prompts está en `src/assets/fondos/LISTA.md`.
-- **Tinte de luz** según el cielo (amanecer, día, atardecer, noche, tormenta, niebla), en CSS.
-- **Clima en WebGL** (`FondoFX`): lluvia y relámpagos en tormenta, nieve en terreno nevado, niebla más densa en escenas con niebla.
+El ambiente responde a la escena que devuelve el cronista (`terreno`, `cielo`):
+
+- **Fondo**: imagen de `src/assets/fondos/<terreno>-<cielo>.jpg` (o la más parecida), con fundido de 1,6 s al cambiar, **paralaje suave con el ratón** y un **pulso cálido de luz** sobre el horizonte. Lista y prompts en `src/assets/fondos/LISTA.md`.
+- **Luz**: gradación de color y tinte por cielo (amanecer, día, atardecer, noche, tormenta, niebla).
+- **Clima en WebGL** (`FondoFX`): lluvia con relámpagos en tormenta, nieve en terreno nevado, polvo en yermo y arena, niebla densa en escenas de niebla, pavesas siempre.
+- **Aves** cruzando el cielo en escenas de día (`Aves`).
+- **Sonido de ambiente** generado con Web Audio (`src/juego/ambiente.js`): viento según el terreno, lluvia y truenos en tormenta, grillos de noche, pájaros de día en bosque y campo. Cada capa se funde en 1,6 s. Se apaga en Opciones.
 
 ## Zurrón
 
@@ -80,7 +86,8 @@ Hasta 8 objetos, listados con nombre, rareza y nota. Cualquiera puede **entrar e
 - **Música**: bordón grave y notas de arpa generados en el navegador. Para usar una pista propia, sustituye `src/juego/musica.js` por un `<audio loop>`.
 - **Dificultad**: Clemente (12 de aliento, tiradas −2), Justa (10, sin ajuste) o Cruel (8, tiradas +2).
 - **Duración**: Corta (8 encrucijadas), Media (12) o Larga (18).
-- **Sellos visibles** y **Efectos de fondo** (pavesas y niebla WebGL).
+- **Sonido de ambiente**: viento, lluvia, grillos o pájaros según la escena.
+- **Sellos visibles** y **Efectos de fondo** (pavesas, clima y aves).
 
 Las preferencias se guardan en `localStorage` y sobreviven entre sesiones; la partida guardada conserva la dificultad y duración con las que empezó.
 
