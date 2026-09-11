@@ -1,0 +1,368 @@
+/* =========================================================================
+   Piedra: texturas procedurales y superficies compartidas (losas, tablillas,
+   placas y botones). Todo en CSS + SVG incrustado, sin imágenes externas.
+   ========================================================================= */
+
+:root {
+  /* Grano fino de granito, en gris frío */
+  --granito: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='0.6' intercept='0.2'/%3E%3CfeFuncG type='linear' slope='0.6' intercept='0.21'/%3E%3CfeFuncB type='linear' slope='0.6' intercept='0.23'/%3E%3CfeFuncA type='linear' slope='0' intercept='1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  /* Vetas grandes, como manchas oscuras de humedad */
+  --vetas: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='v'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012' numOctaves='3' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0.7 0 0 0 -0.18'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23v)'/%3E%3C/svg%3E");
+  /* Grieta para superficies deshabilitadas */
+  --grieta: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90' viewBox='0 0 90 90'%3E%3Cpath d='M38 0 L47 16 L41 30 L55 46 L49 62 L60 78 L57 90' fill='none' stroke='rgba(255,255,255,0.10)' stroke-width='1.4' transform='translate(1,1)'/%3E%3Cpath d='M38 0 L47 16 L41 30 L55 46 L49 62 L60 78 L57 90' fill='none' stroke='rgba(0,0,0,0.85)' stroke-width='1.6'/%3E%3Cpath d='M41 30 L28 38' fill='none' stroke='rgba(0,0,0,0.7)' stroke-width='1.2'/%3E%3Cpath d='M49 62 L66 56' fill='none' stroke='rgba(0,0,0,0.6)' stroke-width='1.1'/%3E%3C/svg%3E");
+
+  /* Superficie de piedra: capas listas para usar en background-image */
+  --piedra-capas: var(--vetas), var(--granito), linear-gradient(168deg, #4b525b 0%, #30363e 48%, #22272e 100%);
+  --piedra-tamanos: 400px 400px, 240px 240px, auto;
+  --piedra-mezcla: multiply, overlay, normal;
+
+  /* Remaches dorados en las cuatro esquinas (para marcos interiores) */
+  --remaches:
+    radial-gradient(circle at 5px 5px, #f0dc9a 0 1.4px, #8a6f2e 2.2px, rgba(0, 0, 0, 0.55) 2.9px, transparent 3.8px),
+    radial-gradient(circle at calc(100% - 5px) 5px, #f0dc9a 0 1.4px, #8a6f2e 2.2px, rgba(0, 0, 0, 0.55) 2.9px, transparent 3.8px),
+    radial-gradient(circle at 5px calc(100% - 5px), #f0dc9a 0 1.4px, #8a6f2e 2.2px, rgba(0, 0, 0, 0.55) 2.9px, transparent 3.8px),
+    radial-gradient(circle at calc(100% - 5px) calc(100% - 5px), #f0dc9a 0 1.4px, #8a6f2e 2.2px, rgba(0, 0, 0, 0.55) 2.9px, transparent 3.8px);
+
+  /* Texto cincelado en la piedra */
+  --cincel: 0 1px 0 rgba(255, 244, 200, 0.18), 0 -1px 1px rgba(0, 0, 0, 0.95);
+}
+
+/* ---- Tablilla: panel grande de piedra ------------------------------------- */
+.tablilla {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 28px 38px 26px;
+  isolation: isolate;
+  border: 1px solid rgba(0, 0, 0, 0.8);
+  border-radius: 4px;
+  background-image: var(--piedra-capas);
+  background-size: var(--piedra-tamanos);
+  background-blend-mode: var(--piedra-mezcla);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 1px 0 0 rgba(255, 255, 255, 0.06),
+    inset 0 -4px 0 rgba(0, 0, 0, 0.55),
+    inset -1px 0 0 rgba(0, 0, 0, 0.35),
+    0 24px 60px rgba(0, 0, 0, 0.65),
+    0 3px 6px rgba(0, 0, 0, 0.6);
+}
+.tablilla__marco {
+  position: absolute;
+  inset: 10px;
+  border: 1px solid rgba(236, 208, 111, 0.3);
+  border-radius: 2px;
+  box-shadow:
+    inset 0 1px 0 rgba(0, 0, 0, 0.6),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.07),
+    0 1px 0 rgba(255, 255, 255, 0.06);
+  background: var(--remaches);
+  pointer-events: none;
+}
+.tablilla__titulo {
+  font-family: var(--titulo);
+  font-weight: 700;
+  font-size: 30px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 10px 0 0;
+  color: #e6cf86;
+  text-shadow: var(--cincel);
+}
+
+/* ---- Placa: recuadro rehundido dentro de la piedra ------------------------ */
+.placa {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 11px 18px 11px 13px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.26);
+  border: 1px solid rgba(0, 0, 0, 0.65);
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.55),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+    0 1px 0 rgba(255, 255, 255, 0.07);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+.placa:hover {
+  background: rgba(236, 208, 111, 0.06);
+  border-color: rgba(236, 208, 111, 0.28);
+}
+
+/* Medallón circular con icono dorado */
+.medallon {
+  flex: 0 0 auto;
+  width: 60px;
+  height: 60px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(236, 208, 111, 0.14), rgba(6, 18, 27, 0) 62%),
+    radial-gradient(circle at 50% 50%, #1a2028 0%, #0c1218 100%);
+  box-shadow:
+    0 0 0 1px rgba(236, 208, 111, 0.55),
+    0 0 0 3px rgba(0, 0, 0, 0.7),
+    0 0 0 4px rgba(236, 208, 111, 0.16),
+    inset 0 2px 6px rgba(0, 0, 0, 0.8),
+    inset 0 -1px 0 rgba(236, 208, 111, 0.1);
+  transition: box-shadow 0.35s ease;
+}
+.medallon svg {
+  width: 34px;
+  height: 34px;
+  color: var(--oro);
+  filter: drop-shadow(0 0 6px rgba(236, 208, 111, 0.45));
+  transition: filter 0.35s ease, transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.placa:hover .medallon {
+  box-shadow:
+    0 0 0 1px rgba(236, 208, 111, 0.9),
+    0 0 0 3px rgba(0, 0, 0, 0.7),
+    0 0 0 4px rgba(236, 208, 111, 0.3),
+    0 0 18px rgba(236, 208, 111, 0.35),
+    inset 0 2px 6px rgba(0, 0, 0, 0.8);
+}
+.placa:hover .medallon svg {
+  filter: drop-shadow(0 0 10px rgba(236, 208, 111, 0.85));
+  transform: scale(1.08);
+}
+
+/* ---- Botones de piedra y oro (sustituyen a los planos) -------------------- */
+.btn-oro {
+  position: relative;
+  font-family: var(--titulo);
+  font-weight: 700;
+  font-size: 12.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #2a1f08;
+  text-shadow: 0 1px 0 rgba(255, 244, 200, 0.55);
+  background: linear-gradient(180deg, #f7e6a8 0%, #ecd06f 42%, #c9a94d 100%);
+  border: 1px solid #6e5620;
+  border-radius: 3px;
+  padding: 13px 26px;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -2px 0 rgba(90, 66, 16, 0.55),
+    0 8px 18px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(0, 0, 0, 0.5);
+  transition: transform 0.2s ease, box-shadow 0.25s ease, filter 0.25s ease;
+}
+.btn-oro:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -2px 0 rgba(90, 66, 16, 0.55),
+    0 10px 22px rgba(0, 0, 0, 0.55),
+    0 0 22px rgba(236, 208, 111, 0.35),
+    0 0 0 1px rgba(0, 0, 0, 0.5);
+}
+.btn-oro:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 4px rgba(90, 66, 16, 0.55), 0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+.btn-ghost {
+  font-family: var(--titulo);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #d8ccaa;
+  text-shadow: var(--cincel);
+  background-image: var(--granito), linear-gradient(180deg, #454c55 0%, #2b3138 100%);
+  background-size: 240px 240px, auto;
+  background-blend-mode: overlay, normal;
+  border: 1px solid rgba(0, 0, 0, 0.75);
+  border-radius: 3px;
+  padding: 13px 22px;
+  cursor: pointer;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.5),
+    0 8px 18px rgba(0, 0, 0, 0.45);
+  transition: transform 0.2s ease, box-shadow 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+.btn-ghost:hover {
+  color: #fff0c2;
+  border-color: rgba(236, 208, 111, 0.55);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.5),
+    0 10px 22px rgba(0, 0, 0, 0.5),
+    0 0 16px rgba(236, 208, 111, 0.18);
+}
+.btn-ghost:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+.btn-ghost--oro {
+  color: var(--oro);
+  border-color: rgba(236, 208, 111, 0.55);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .placa, .medallon, .medallon svg, .btn-oro, .btn-ghost { transition: none; }
+}
+
+/* ---- Controles de piedra: interruptor y segmentos -------------------------- */
+.interruptor {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+.interruptor__pista {
+  position: relative;
+  width: 48px;
+  height: 24px;
+  border-radius: 12px;
+  background-image: var(--granito), linear-gradient(180deg, #1a2028 0%, #0e141a 100%);
+  background-size: 240px 240px, auto;
+  background-blend-mode: overlay, normal;
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.85),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.06),
+    0 0 0 1px rgba(0, 0, 0, 0.7),
+    0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: box-shadow 0.3s ease;
+}
+.interruptor__bola {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #6a727c 0%, #3a4149 100%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), background 0.3s ease, box-shadow 0.3s ease;
+}
+.interruptor--on .interruptor__bola {
+  transform: translateX(24px);
+  background: linear-gradient(180deg, #f7e6a8 0%, #ecd06f 45%, #b8933f 100%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.7), 0 0 12px rgba(236, 208, 111, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.interruptor--on .interruptor__pista {
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.85),
+    inset 0 0 12px rgba(236, 208, 111, 0.18),
+    0 0 0 1px rgba(236, 208, 111, 0.45),
+    0 1px 0 rgba(255, 255, 255, 0.08);
+}
+.interruptor__texto {
+  min-width: 2ch;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(223, 233, 240, 0.55);
+  transition: color 0.3s ease;
+}
+.interruptor--on .interruptor__texto { color: var(--oro); }
+.interruptor:focus-visible { outline: none; }
+.interruptor:focus-visible .interruptor__pista { box-shadow: 0 0 0 2px var(--oro); }
+
+.segmentos {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.45);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8), 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.segmento {
+  font-family: var(--titulo);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(223, 233, 240, 0.6);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: color 0.25s ease, background 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.segmento:hover { color: #fff0c2; }
+.segmento--on {
+  color: #2a1f08;
+  text-shadow: 0 1px 0 rgba(255, 244, 200, 0.5);
+  background: linear-gradient(180deg, #f7e6a8 0%, #ecd06f 45%, #c9a94d 100%);
+  border-color: #6e5620;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(90, 66, 16, 0.5), 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+.segmento:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--oro); }
+.medallon--menor { width: 48px; height: 48px; }
+.medallon--menor svg { width: 27px; height: 27px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .interruptor__pista, .interruptor__bola, .interruptor__texto, .segmento { transition: none; }
+}
+
+/* ---- Tablilla en columna (paneles laterales) ------------------------------- */
+.tablilla--columna {
+  padding: 18px 20px 16px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+.tablilla__marco--fino { inset: 7px; }
+
+/* ---- Muestras de color ------------------------------------------------------ */
+.muestras {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 5px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.8), 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+.muestra {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.7);
+  cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), inset 0 -2px 3px rgba(0, 0, 0, 0.45), 0 1px 2px rgba(0, 0, 0, 0.6);
+  transition: transform 0.2s ease, box-shadow 0.25s ease;
+}
+.muestra:hover { transform: scale(1.12); }
+.muestra--on {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 0 0 2px #0c1218,
+    0 0 0 3.5px var(--oro),
+    0 0 10px rgba(236, 208, 111, 0.55);
+}
+.muestra--ninguna {
+  background: linear-gradient(135deg, #2a3038 0%, #1a2028 100%);
+}
+.muestra--ninguna::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  top: 50%;
+  height: 1.5px;
+  background: rgba(223, 233, 240, 0.55);
+  transform: rotate(-45deg);
+}
+.muestra:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--oro); }
+
+.segmentos--mini { gap: 3px; padding: 3px; }
+.segmentos--mini .segmento { font-size: 9.5px; letter-spacing: 0.12em; padding: 6px 9px; }

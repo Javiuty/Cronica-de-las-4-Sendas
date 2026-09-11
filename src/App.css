@@ -1,0 +1,201 @@
+/* =========================================================================
+   Escenario: fondo, velos y columna principal
+   ========================================================================= */
+
+.velo {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+.velo--vertical {
+  background: linear-gradient(180deg, rgba(6, 18, 27, 0.82) 0%, rgba(6, 18, 27, 0.2) 36%, rgba(4, 12, 19, 0.84) 100%);
+}
+.velo--radial {
+  background: radial-gradient(125% 92% at 50% 42%, rgba(39, 121, 167, 0.06) 0%, rgba(4, 10, 16, 0.8) 100%);
+}
+.fondo-fx {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.escenario {
+  position: relative;
+  z-index: 2;
+  height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Animaciones de entrada (cada pantalla ajusta la duración) */
+.entrar { animation: entrar 0.5s ease both; }
+.surgir { animation: surgir 0.5s ease both; }
+
+/* Figura 3D: el lienzo WebGL ocupa todo el contenedor */
+.figura3d {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* =========================================================================
+   Piezas comunes
+   ========================================================================= */
+
+.oro { color: var(--oro); }
+
+.sobretitulo {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--azul);
+}
+.sobretitulo--ancho { letter-spacing: 0.34em; }
+.sobretitulo--seccion {
+  flex: 0 0 auto;
+  font-size: 9.5px;
+  letter-spacing: 0.28em;
+  margin-bottom: 12px;
+}
+.sobretitulo--centrado {
+  text-align: center;
+  margin-bottom: 9px;
+}
+
+.raya {
+  flex: 0 0 auto;
+  height: 1px;
+  background: var(--oro);
+}
+.raya--56 { width: 56px; }
+.raya--60 { width: 60px; }
+.raya--64 { width: 64px; }
+.raya--panel { margin: 18px 0 24px; }
+.raya--fin { margin: 20px 0; }
+
+.lienzo {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  padding: 3vh 5vw;
+  animation-duration: 0.45s;
+}
+.lienzo--centrado { align-items: center; }
+.lienzo--arriba { align-items: flex-start; }
+.lienzo--fin {
+  align-items: center;
+  overflow: hidden;
+}
+
+/* Botones */
+.btn-oro--ancho {
+  flex: 1;
+  font-size: 13px;
+  padding: 14px 18px;
+}
+
+.botonera {
+  display: flex;
+  gap: 11px;
+  margin-top: 28px;
+}
+.botonera--envuelta { flex-wrap: wrap; }
+.botonera--pegada {
+  flex: 0 0 auto;
+  gap: 10px;
+  margin-top: 14px;
+}
+.botonera--pegada .btn-ghost { padding: 14px 16px; }
+.botonera--centrada {
+  justify-content: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+.botonera--centrada .btn-ghost { padding: 10px 16px; }
+
+/* =========================================================================
+   Carga
+   ========================================================================= */
+
+.carga {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 26px;
+  padding: 4vh 6vw;
+  animation-duration: 0.5s;
+}
+.carga__sello {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+.carga__marco {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(236, 208, 111, 0.18);
+  transform: rotate(45deg);
+}
+.carga__aro {
+  position: absolute;
+  inset: 14px;
+  border: 1px solid rgba(236, 208, 111, 0.5);
+  border-top-color: transparent;
+  border-right-color: transparent;
+  transform: rotate(45deg);
+  animation: girar 2.6s linear infinite;
+}
+.carga__pct {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--titulo);
+  font-weight: 700;
+  font-size: 26px;
+  color: var(--oro);
+}
+.carga__texto {
+  text-align: center;
+  max-width: 46ch;
+}
+.carga__frase {
+  font-family: var(--serif);
+  font-size: 20px;
+  line-height: 1.5;
+  font-style: italic;
+  color: rgba(223, 233, 240, 0.9);
+  margin: 14px 0 0;
+  text-wrap: pretty;
+  animation: latido 2.4s ease-in-out infinite;
+}
+.carga__barra {
+  width: min(420px, 70vw);
+  height: 2px;
+  background: rgba(236, 208, 111, 0.16);
+}
+.carga__progreso {
+  height: 100%;
+  background: var(--oro);
+  transition: width 0.4s;
+}
+.carga__error {
+  text-align: center;
+  max-width: 44ch;
+}
+.error__texto {
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--rojo);
+}

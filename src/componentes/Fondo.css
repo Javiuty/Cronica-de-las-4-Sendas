@@ -1,0 +1,62 @@
+/* Fondo de escena: capas apiladas con fundido y paneo lento */
+.fondo {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--fondo);
+}
+.fondo__capa {
+  position: absolute;
+  inset: -3%;
+  background-size: cover;
+  background-position: center;
+  filter: saturate(0.85) brightness(0.66);
+  animation:
+    fondo-aparecer 1.6s ease both,
+    fondo-paneo 70s ease-in-out infinite alternate;
+  will-change: opacity, transform;
+}
+@keyframes fondo-aparecer {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes fondo-paneo {
+  from { transform: scale(1.02) translate3d(-1%, 0.5%, 0); }
+  to { transform: scale(1.06) translate3d(1%, -0.5%, 0); }
+}
+
+/* En partida la escena se ve por la ventana: menos oscurecida */
+.fondo--vivo .fondo__capa { filter: saturate(1) brightness(1); }
+.velo--suave.velo--vertical {
+  background: linear-gradient(180deg, rgba(6, 18, 27, 0.18) 0%, rgba(6, 18, 27, 0.02) 40%, rgba(4, 12, 19, 0.5) 100%);
+}
+.velo--suave.velo--radial {
+  background: radial-gradient(125% 92% at 50% 42%, rgba(39, 121, 167, 0.02) 0%, rgba(4, 10, 16, 0.32) 100%);
+}
+.velo { transition: background 1.2s ease; }
+
+/* Gradación de color de la imagen según el cielo (se funde al cambiar) */
+.fondo__capa { transition: filter 1.6s ease; }
+.fondo--cielo-amanecer .fondo__capa { filter: saturate(1.05) brightness(1.02) sepia(0.18) hue-rotate(-8deg); }
+.fondo--cielo-dia .fondo__capa { filter: saturate(1.05) brightness(1.08) contrast(1.02); }
+.fondo--cielo-atardecer .fondo__capa { filter: saturate(1.25) brightness(0.98) sepia(0.32) hue-rotate(-14deg) contrast(1.05); }
+.fondo--cielo-noche .fondo__capa { filter: saturate(0.75) brightness(0.62) hue-rotate(12deg) contrast(1.08); }
+.fondo--cielo-tormenta .fondo__capa { filter: saturate(0.5) brightness(0.55) contrast(1.12); }
+.fondo--cielo-niebla .fondo__capa { filter: saturate(0.6) brightness(0.95) contrast(0.78); }
+
+/* Tinte de luz según el cielo de la escena */
+.velo--cielo {
+  background: transparent;
+  transition: background 1.6s ease;
+}
+.velo--cielo-amanecer { background: linear-gradient(180deg, rgba(250, 190, 140, 0.26) 0%, rgba(255, 210, 170, 0.1) 45%, rgba(120, 80, 60, 0.18) 100%); }
+.velo--cielo-dia { background: linear-gradient(180deg, rgba(255, 245, 220, 0.1) 0%, rgba(255, 245, 220, 0.02) 50%, rgba(255, 245, 220, 0.06) 100%); }
+.velo--cielo-atardecer { background: radial-gradient(70% 50% at 50% 38%, rgba(255, 150, 60, 0.28) 0%, rgba(220, 100, 40, 0.14) 40%, transparent 75%), linear-gradient(180deg, rgba(200, 95, 40, 0.18) 0%, rgba(70, 25, 45, 0.3) 100%); }
+.velo--cielo-noche { background: linear-gradient(180deg, rgba(10, 18, 60, 0.42) 0%, rgba(6, 12, 40, 0.3) 60%, rgba(2, 6, 20, 0.45) 100%); }
+.velo--cielo-tormenta { background: linear-gradient(180deg, rgba(22, 28, 40, 0.45) 0%, rgba(30, 36, 48, 0.25) 100%); }
+.velo--cielo-niebla { background: linear-gradient(180deg, rgba(170, 182, 195, 0.12) 0%, rgba(185, 195, 205, 0.3) 100%); }
+
+@media (prefers-reduced-motion: reduce) {
+  .fondo__capa { animation: fondo-aparecer 0.01s both; }
+  .velo--cielo { transition: none; }
+}

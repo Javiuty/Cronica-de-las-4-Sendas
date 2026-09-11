@@ -1,0 +1,69 @@
+/* =========================================================================
+   Opciones: tablilla con cinco ajustes
+   ========================================================================= */
+
+.opciones-lienzo {
+  padding: 2.5vh 5vw 3vh;
+}
+.tablilla--opciones {
+  max-width: 760px;
+  margin-block: auto;
+  animation: tablilla-surgir 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.opciones__cabecera .raya--panel {
+  margin: 14px 0 18px;
+}
+
+.ajustes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ajuste {
+  gap: 16px;
+  animation: placa-entrar 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(240ms + var(--i, 0) * 90ms);
+}
+.ajuste__texto {
+  flex: 1;
+  min-width: 0;
+}
+.ajuste__nombre {
+  display: block;
+  font-family: var(--titulo);
+  font-weight: 700;
+  font-size: 14.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #e6cf86;
+  text-shadow: var(--cincel);
+}
+.ajuste__nota {
+  display: block;
+  font-size: 14.5px;
+  line-height: 1.45;
+  font-style: italic;
+  color: rgba(223, 233, 240, 0.72);
+  margin-top: 3px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.7);
+}
+.ajuste__control {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+}
+
+.opciones__botonera {
+  margin-top: 20px;
+}
+
+@media (max-width: 720px) {
+  .ajuste { flex-wrap: wrap; }
+  .ajuste__control { width: 100%; padding-left: 64px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tablilla--opciones, .ajuste { animation: none; }
+}

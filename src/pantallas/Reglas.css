@@ -1,0 +1,97 @@
+/* =========================================================================
+   Cómo se juega: tablilla de piedra con cinco placas
+   ========================================================================= */
+
+.reglas-lienzo {
+  padding: 2.5vh 5vw 3vh;
+}
+.reglas__cabecera .raya--panel {
+  margin: 14px 0 18px;
+}
+.tablilla--reglas {
+  max-width: 880px;
+  margin-block: auto; /* centrada si sobra alto; sin recorte si no */
+  animation: tablilla-surgir 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes tablilla-surgir {
+  from { opacity: 0; transform: translateY(18px) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+
+.reglas__cabecera {
+  position: relative;
+}
+
+.reglas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.regla {
+  animation: placa-entrar 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(240ms + var(--i, 0) * 90ms);
+}
+@keyframes placa-entrar {
+  from { opacity: 0; transform: translateX(-16px); }
+  to { opacity: 1; transform: none; }
+}
+.regla__cuerpo {
+  flex: 1;
+  min-width: 0;
+}
+.regla__numero {
+  display: block;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(125, 192, 232, 0.9);
+  margin-bottom: 3px;
+}
+.regla__titulo {
+  display: block;
+  font-family: var(--titulo);
+  font-weight: 700;
+  font-size: 14.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #e6cf86;
+  text-shadow: var(--cincel);
+}
+.regla__texto {
+  display: block;
+  font-size: 15px;
+  line-height: 1.48;
+  color: rgba(228, 232, 236, 0.86);
+  margin-top: 5px;
+  text-wrap: pretty;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.7);
+}
+
+.reglas__botonera {
+  margin-top: 20px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tablilla--reglas, .regla { animation: none; }
+}
+
+/* Pantallas bajas (portátiles): versión compacta para que la tablilla quepa entera */
+@media (max-height: 800px) {
+  .reglas-lienzo { padding: 1.5vh 5vw 2vh; }
+  .tablilla--reglas { padding: 20px 30px 18px; }
+  .tablilla--reglas .tablilla__titulo { font-size: 24px; margin-top: 6px; }
+  .reglas__cabecera .raya--panel { margin: 10px 0 12px; }
+  .reglas { gap: 6px; }
+  .tablilla--reglas .placa { padding: 9px 16px 9px 11px; gap: 14px; }
+  .tablilla--reglas .medallon { width: 48px; height: 48px; }
+  .tablilla--reglas .medallon svg { width: 28px; height: 28px; }
+  .regla__numero { display: none; }
+  .regla__titulo { font-size: 13.5px; }
+  .regla__texto { font-size: 14px; line-height: 1.42; margin-top: 3px; }
+  .reglas__botonera { margin-top: 14px; }
+  .reglas__botonera .btn-oro, .reglas__botonera .btn-ghost { padding: 11px 20px; }
+}

@@ -1,0 +1,95 @@
+/* =========================================================================
+   Fin de la crónica: tablilla con epílogo y los cuatro sellos
+   ========================================================================= */
+
+.fin-lienzo {
+  padding: 2.5vh 5vw 3vh;
+}
+.tablilla--fin {
+  max-width: 720px;
+  margin-block: auto;
+  animation: tablilla-surgir 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.fin__titulo {
+  font-size: clamp(24px, 3.4vw, 34px);
+  line-height: 1.1;
+  margin-top: 12px;
+}
+.fin__cabecera .raya--fin {
+  margin: 18px 0;
+}
+.fin__epilogo {
+  font-size: 18.5px;
+  line-height: 1.66;
+  margin: 0;
+  color: rgba(232, 236, 240, 0.92);
+  text-wrap: pretty;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.7);
+}
+
+.fin__sellos {
+  list-style: none;
+  margin: 26px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+.fin__sello {
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: 14px 8px 12px;
+  text-align: center;
+  animation: placa-entrar 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(300ms + var(--i, 0) * 110ms);
+}
+.fin__glifo {
+  font-family: var(--titulo);
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 1;
+  color: rgba(223, 233, 240, 0.45);
+  text-shadow: var(--cincel);
+  transition: color 0.4s ease, text-shadow 0.4s ease;
+}
+.fin__nombre {
+  font-family: var(--mono);
+  font-size: 8.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(223, 233, 240, 0.6);
+  margin-top: 4px;
+}
+.fin__valor {
+  font-family: var(--titulo);
+  font-size: 13px;
+  color: rgba(223, 233, 240, 0.55);
+}
+.fin__sello--on {
+  background: rgba(236, 208, 111, 0.09);
+  border-color: rgba(236, 208, 111, 0.45);
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.55),
+    inset 0 0 18px rgba(236, 208, 111, 0.14),
+    0 0 18px rgba(236, 208, 111, 0.16);
+}
+.fin__sello--on .fin__glifo {
+  color: var(--oro);
+  text-shadow: var(--cincel), 0 0 14px rgba(236, 208, 111, 0.6);
+}
+.fin__sello--on .fin__valor { color: var(--oro); }
+
+.fin__botonera {
+  margin-top: 26px;
+}
+
+@media (max-height: 800px) {
+  .tablilla--fin { padding: 22px 30px 20px; }
+  .fin__epilogo { font-size: 17px; line-height: 1.55; }
+  .fin__sellos { margin-top: 18px; }
+  .fin__botonera { margin-top: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tablilla--fin, .fin__sello { animation: none; }
+}
