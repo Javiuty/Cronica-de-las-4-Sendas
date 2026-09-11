@@ -4,6 +4,9 @@
    ========================================================================= */
 
 .juego {
+  --lateral-ancho: 300px;
+  --margen: 3.5vw;
+  --hueco: 22px;
   position: relative;
   flex: 1;
   min-height: 0;
@@ -25,9 +28,9 @@
 /* ---- Crónica flotante ------------------------------------------------------- */
 .cronica {
   position: absolute;
-  left: 3.5vw;
+  left: var(--margen);
+  right: calc(var(--margen) + var(--lateral-ancho) + var(--hueco)); /* todo el ancho que deja la ficha */
   bottom: 2.6vh;
-  width: min(60vw, 920px);
   max-height: 70vh;
   display: flex;
   flex-direction: column;
@@ -228,9 +231,9 @@
 .lateral {
   position: absolute;
   top: 2.4vh;
-  right: 3.5vw;
+  right: var(--margen);
   bottom: 2.6vh;
-  width: 300px;
+  width: var(--lateral-ancho);
   display: flex;
   flex-direction: column;
   padding: 16px 14px 14px;
@@ -456,7 +459,8 @@
   .cronica { max-height: 74vh; }
   .cronica__prosa { font-size: 17.5px; line-height: 1.55; }
   .opcion { padding: 9px 12px 9px 14px; font-size: 16px; }
-  .lateral { width: 280px; padding: 12px 12px 10px; }
+  .juego { --lateral-ancho: 280px; }
+  .lateral { padding: 12px 12px 10px; }
   .lateral__scroll { gap: 12px; }
 }
 @media (prefers-reduced-motion: reduce) {
