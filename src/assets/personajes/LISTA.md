@@ -30,4 +30,5 @@ Es el mismo estilo de los fondos; adjunta uno de ellos como referencia si puedes
 ### Variantes (opcional)
 
 Si quieres ofrecer elección, añade `mercenario-2.jpg`, `mercenario-3.jpg`…
-(mismo estilo, distinta persona). Aún no se usan; avísame y monto el selector.
+(mismo estilo, distinta persona). El creador muestra flechas y puntos para
+elegir entre ellas, y la variante elegida se usa también en la partida.

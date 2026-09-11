@@ -57,7 +57,7 @@ src/
 
 ## Personaje
 
-Cada oficio tiene un **retrato ilustrado** (`src/assets/personajes/<clave>.jpg`) que se muestra en el creador dentro de un marco de piedra y, recortado a busto, en el panel de partida. El nombre se puede escribir o sacar **al azar** de una lista de nombres castellanos medievales (`NOMBRES` en `src/juego/datos.js`). Los objetos iniciales tienen su **ilustración** (`src/assets/objetos/<nombre-en-minusculas>.jpg`), usada en las tarjetas del creador y en el zurrón. Si falta una imagen, aparece un marcador de piedra con el icono del oficio o el rombo de rareza; basta con soltar el archivo en su carpeta. Listas con nombres, formato y prompts en `src/assets/personajes/LISTA.md` y `src/assets/objetos/LISTA.md`.
+Cada oficio tiene un **retrato ilustrado** (`src/assets/personajes/<clave>.jpg`) que se muestra en el creador dentro de un marco de piedra y, recortado a busto, en el panel de partida. Si hay **variantes** (`<clave>-2.jpg`, `<clave>-3.jpg`…), el creador muestra flechas y puntos para elegir entre ellas, y la elegida viaja con la partida. Las miniaturas de la lista de oficios y las losetas de objeto usan las mismas imágenes. El nombre se puede escribir o sacar **al azar** de una lista de nombres castellanos medievales (`NOMBRES` en `src/juego/datos.js`). Los objetos iniciales tienen su **ilustración** (`src/assets/objetos/<nombre-en-minusculas>.jpg`), usada en las tarjetas del creador y en el zurrón. Si falta una imagen, aparece un marcador de piedra con el icono del oficio o el rombo de rareza; basta con soltar el archivo en su carpeta. Listas con nombres, formato y prompts en `src/assets/personajes/LISTA.md` y `src/assets/objetos/LISTA.md`.
 
 ## Armas
 

@@ -29,10 +29,25 @@ function indexar(mapa) {
 const RETRATOS = indexar(retratos)
 const OBJETOS = indexar(objetos)
 
-/** URL del retrato de un oficio (por su `clave`), o null. */
-export function retratoDe(oficio) {
-  if (!oficio) return null
-  return RETRATOS[slug(oficio.clave || oficio.nombre)] || null
+/**
+ * Retratos de un oficio, en orden: `clave.jpg`, `clave-2.jpg`, `clave-3.jpg`…
+ * Lista vacía si no hay ninguno.
+ */
+export function retratosDe(oficio) {
+  if (!oficio) return []
+  const base = slug(oficio.clave || oficio.nombre)
+  const lista = []
+  if (RETRATOS[base]) lista.push(RETRATOS[base])
+  for (let i = 2; i < 20; i++) {
+    if (RETRATOS[base + '-' + i]) lista.push(RETRATOS[base + '-' + i])
+  }
+  return lista
+}
+
+/** URL del retrato de un oficio (variante `i`, por defecto la primera), o null. */
+export function retratoDe(oficio, i = 0) {
+  const lista = retratosDe(oficio)
+  return lista[i] || lista[0] || null
 }
 
 /** URL de la ilustración de un objeto (por nombre), o null. */

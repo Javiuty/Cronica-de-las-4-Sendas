@@ -16,7 +16,7 @@ export const ESTADO_INICIAL = {
   lugar: '', ambiente: '', prosa: '', opciones: [], log: [], full: [],
   escena: null, cargando: false, error: null, epilogo: '', tituloFinal: '', muerto: false,
   haySave: false, dado: null, usando: null, gastados: [],
-  nombre: '', oficio: 0, objetoIni: 0,
+  nombre: '', oficio: 0, objetoIni: 0, retrato: 0,
   optDificultad: null, optDuracion: null, optSellos: null, optMusica: null, optEfectos: null,
   cargaPct: 0, cargaFrase: FRASES[0],
 }
@@ -40,7 +40,7 @@ function guardar(s) {
       turno: s.turno, vida: s.vida, vidaMax: s.vidaMax, oro: s.oro, inv: s.inv,
       armas: s.armas, rasgos: s.rasgos, lugar: s.lugar, ambiente: s.ambiente,
       prosa: s.prosa, opciones: s.opciones, log: s.log, escena: s.escena, gastados: s.gastados,
-      full: s.full, nombre: s.nombre, oficio: s.oficio, objetoIni: s.objetoIni,
+      full: s.full, nombre: s.nombre, oficio: s.oficio, objetoIni: s.objetoIni, retrato: s.retrato,
       optDificultad: s.optDificultad, optDuracion: s.optDuracion, optSellos: s.optSellos,
     }))
   } catch { /* sin almacenamiento */ }
@@ -142,7 +142,8 @@ export function useCronica() {
     const posibles = NOMBRES.filter((n) => n !== prev.nombre)
     return { nombre: posibles[Math.floor(Math.random() * posibles.length)] }
   })
-  const elegirOficio = (i) => patch({ oficio: i, objetoIni: 0 })
+  const elegirOficio = (i) => patch({ oficio: i, objetoIni: 0, retrato: 0 })
+  const elegirRetrato = (i) => patch({ retrato: i })
   const elegirObjeto = (i) => patch({ objetoIni: i })
   const elegirDificultad = (k) => patch({ optDificultad: k })
   const elegirDuracion = (k) => patch({ optDuracion: k })
@@ -355,7 +356,7 @@ export function useCronica() {
   return {
     s, logRef,
     irMenu, irPersonaje, irOpciones, irReglas,
-    setNombre, nombreAzar, elegirOficio, elegirObjeto, elegirDificultad, elegirDuracion, toggleSellos, toggleMusica, toggleEfectos,
+    setNombre, nombreAzar, elegirOficio, elegirObjeto, elegirRetrato, elegirDificultad, elegirDuracion, toggleSellos, toggleMusica, toggleEfectos,
     comenzar, continuar, abandonar, reintentar, elegir, invocar,
   }
 }

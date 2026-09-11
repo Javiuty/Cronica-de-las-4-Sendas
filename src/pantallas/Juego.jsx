@@ -110,7 +110,7 @@ export default function Juego({ s, logRef, elegir, invocar, reintentar, abandona
         <div className="lateral__scroll">
           <div className="placa heroe">
             <div className="heroe__retrato">
-              <Retrato oficio={of} Icono={ICONO_OFICIO[of.clave]} variante="busto" className="heroe__figura" />
+              <Retrato oficio={of} indice={s.retrato || 0} Icono={ICONO_OFICIO[of.clave]} variante="busto" className="heroe__figura" />
             </div>
             <div className="heroe__datos">
               <div className="heroe__nombre">{(s.nombre || '').trim() || 'Sin nombre'}</div>
