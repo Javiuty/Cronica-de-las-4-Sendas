@@ -59,12 +59,12 @@ const SUSTITUCIONES = [
   [/\bpr[ií]ncipe de las tinieblas\b/gi, 'demonio'],
   [/\bcelada\b/gi, 'trampa'],
   [/\bceladas\b/gi, 'trampas'],
-  [/las sienes/gi, 'la frente'],
-  [/sus sienes/gi, 'su frente'],
-  [/sienes/gi, 'frente'],
-  [/sien/gi, 'frente'],
-  [/ribazos/gi, 'terraplenes'],
-  [/ribazo/gi, 'terraplén'],
+  [/\blas sienes\b/gi, 'la frente'],
+  [/\bsus sienes\b/gi, 'su frente'],
+  [/\bsienes\b/gi, 'frente'],
+  [/\bsien\b/gi, 'frente'],
+  [/\bribazos\b/gi, 'terraplenes'],
+  [/\bribazo\b/gi, 'terraplén'],
 ]
 
 /** Copia la mayúscula inicial del original en el sustituto. */
