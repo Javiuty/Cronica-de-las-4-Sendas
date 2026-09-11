@@ -464,7 +464,7 @@
 .objeto-z__boton:focus-visible { outline: none; }
 .objeto-z__boton:focus-visible .objeto-z__estado { box-shadow: 0 0 0 2px var(--oro); }
 
-.btn-salir { width: 100%; font-size: 10.5px; padding: 12px; }
+.btn-salir { flex: 0 0 auto; width: 100%; font-size: 10.5px; padding: 12px; margin-top: 14px; }
 
 @media (max-height: 800px) {
   .cronica { max-height: 74vh; }

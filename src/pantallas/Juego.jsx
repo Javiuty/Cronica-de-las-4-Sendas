@@ -225,8 +225,8 @@ export default function Juego({ s, logRef, elegir, invocar, reintentar, abandona
             </div>
           </div>
 
-          <button type="button" className="btn-ghost btn-salir" onClick={abandonar}>Guardar y salir al menú</button>
         </div>
+        <button type="button" className="btn-ghost btn-salir" onClick={abandonar}>Guardar y salir al menú</button>
       </aside>
     </section>
   )
