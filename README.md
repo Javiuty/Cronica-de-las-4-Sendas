@@ -8,11 +8,11 @@ Juego de rol de fantasía medieval narrado por una IA. Eliges entre tres o cuatr
 
 | Menú principal                                 | Creador de personaje                                                        |
 | ----------------------------------------------- | --------------------------------------------------------------------------- |
-| ![Menú con las losas de piedra](docs/menu.jpg) | ![Cuatro paneles de oficio en acordeón, con objeto inicial y nombre](docs/personaje.jpg) |
+| ![Menú sobre el paisaje con paneles de cristal](docs/menu.jpg) | ![Cuatro paneles de oficio en acordeón, con objeto inicial y nombre](docs/personaje.jpg) |
 
 | Cómo se juega                                       | La tirada                                           |
 | ---------------------------------------------------- | --------------------------------------------------- |
-| ![Las cinco reglas en una tablilla](docs/reglas.jpg) | ![El d20 de piedra con el resultado](docs/dado.jpg) |
+| ![Las cinco reglas en un panel de cristal](docs/reglas.jpg) | ![El d20 con el resultado](docs/dado.jpg) |
 
 ## Arrancar
 
@@ -34,7 +34,8 @@ Si el juego se ejecuta dentro del visor de Claude (`window.claude.complete` disp
 src/
   App.jsx                 raíz: fondo, cabecera, pantalla según la fase y el dado
   App.css / index.css     estilos (clases; el original usaba estilos inline)
-  piedra.css              texturas de piedra en SVG, tablillas, placas y botones
+  piedra.css              paneles de cristal oscuro con filo dorado, placas, medallones y botones
+                          (conserva las texturas de piedra en SVG, ya sin uso)
   juego/
     datos.js              rasgos, oficios, tonos, reglas, esquema JSON del cronista
     derivados.js          cálculos puros a partir del estado (sellos, umbral, largo…)
@@ -63,11 +64,11 @@ El creador es una pantalla de selección con **cuatro paneles a lo alto**, uno p
 
 ## Armas
 
-Dos ranuras: **cuerpo a cuerpo** y **a distancia**. Cada arma tiene un bono de +1 a +4 según lo buena que sea (1 improvisada o gastada, 2 arma corriente, 3 fina, 4 excepcional) y solo suma cuando la opción elegida pide su tipo; el cronista etiqueta cada opción con `combate: cuerpo | distancia | ninguno` y la interfaz lo muestra con un icono de espada o arco. Coger un arma nueva sustituye a la de su ranura; perderla, romperla o entregarla la vacía (`quitar_arma: cuerpo | distancia` en los efectos). El prompt exige que todo cambio de inventario, dinero o salud que cuente la prosa aparezca en `efectos`, y el cliente elimina objetos por nombre sin distinguir mayúsculas ni tildes. Las armas iniciales están en `OFICIOS` (`armas: [...]`) y las reglas de normalización en `normalizarArma` de `src/juego/derivados.js`.
+Cada arma puede llevar **ilustración** (`src/assets/armas/`): por nombre exacto o por palabra clave para las que inventa el cronista ("Hacha de leñador" usa `hacha.jpg`). Lista y prompts en `src/assets/armas/LISTA.md`. Dos ranuras: **cuerpo a cuerpo** y **a distancia**. Cada arma tiene un bono de +1 a +4 según lo buena que sea (1 improvisada o gastada, 2 arma corriente, 3 fina, 4 excepcional) y solo suma cuando la opción elegida pide su tipo; el cronista etiqueta cada opción con `combate: cuerpo | distancia | ninguno` y la interfaz lo muestra con un icono de espada o arco. Coger un arma nueva sustituye a la de su ranura; perderla, romperla o entregarla la vacía (`quitar_arma: cuerpo | distancia` en los efectos). El prompt exige que todo cambio de inventario, dinero o salud que cuente la prosa aparezca en `efectos`, y el cliente elimina objetos por nombre sin distinguir mayúsculas ni tildes. Las armas iniciales están en `OFICIOS` (`armas: [...]`) y las reglas de normalización en `normalizarArma` de `src/juego/derivados.js`.
 
 ## La pantalla de partida
 
-La ilustración de la escena ocupa toda la pantalla. La crónica flota abajo a la izquierda sobre un degradado que va de transparente a opaco, así el cielo y el horizonte quedan limpios; el registro queda anclado al párrafo más reciente y los anteriores se desvanecen por arriba. La ficha del personaje es un panel traslúcido con desenfoque a la derecha. Las opciones son de cristal oscuro con filo dorado.
+La ilustración de la escena ocupa toda la pantalla. La crónica flota abajo a la izquierda sobre un degradado que va de transparente a opaco, así el cielo y el horizonte quedan limpios; el registro queda anclado al párrafo más reciente y los anteriores se desvanecen por arriba. La ficha del personaje es un panel traslúcido con desenfoque a la derecha. Todas las pantallas comparten el mismo lenguaje: paneles de cristal oscuro con filo dorado sobre el paisaje, que siempre está vivo (paralaje, pulso de luz, pavesas).
 
 El ambiente responde a la escena que devuelve el cronista (`terreno`, `cielo`):
 

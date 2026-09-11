@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { IconoArco, IconoCapucha, IconoCruz, IconoEspada } from '../componentes/Iconos'
 import { OFICIOS, RAREZA, TIPOS_ARMA } from '../juego/datos'
 import { oficioDe, vidaInicialDe } from '../juego/derivados'
-import { imagenObjeto, retratoDe, retratosDe } from '../juego/imagenes'
+import { imagenArma, imagenObjeto, retratoDe, retratosDe } from '../juego/imagenes'
 import './Personaje.css'
 
 const ICONOS_OFICIOS = [IconoEspada, IconoCapucha, IconoCruz, IconoArco]
@@ -86,10 +86,14 @@ export default function Personaje({ s, elegirOficio, elegirObjeto, elegirRetrato
                       <li className="dotacion__fila"><span>Aliento</span><strong>{vidaInicialDe(s)}</strong></li>
                       {['cuerpo', 'distancia'].map((tipo) => {
                         const a = (x.armas || []).find((w) => w.tipo === tipo)
+                        const img = a ? imagenArma(a.nombre) : null
                         return (
                           <li key={tipo} className={'dotacion__fila' + (a ? '' : ' dotacion__fila--vacia')}>
                             <span>{TIPOS_ARMA[tipo].nombre}</span>
-                            <strong>{a ? a.nombre + ' +' + a.bono : TIPOS_ARMA[tipo].vacio}</strong>
+                            <strong className="dotacion__valor">
+                              {img && <span className="dotacion__arma" style={{ backgroundImage: `url(${img})` }} aria-hidden="true" />}
+                              {a ? a.nombre + ' +' + a.bono : TIPOS_ARMA[tipo].vacio}
+                            </strong>
                           </li>
                         )
                       })}

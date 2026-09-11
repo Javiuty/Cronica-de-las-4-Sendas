@@ -4,7 +4,7 @@ export default function Menu({ haySave, irPersonaje, continuar, irOpciones, irRe
   const entradas = [
     { titulo: 'Nuevo juego', nota: 'Forja un personaje y sal al camino.', ir: irPersonaje, off: false },
     { titulo: 'Continuar', nota: haySave ? 'Retoma la crónica donde la dejaste.' : 'No hay ninguna crónica guardada.', ir: continuar, off: !haySave },
-    { titulo: 'Opciones', nota: 'Tono, duración y cómo se revelan los sellos.', ir: irOpciones, off: false },
+    { titulo: 'Opciones', nota: 'Sonido, dificultad, duración y sellos.', ir: irOpciones, off: false },
     { titulo: 'Cómo se juega', nota: 'Eliges, rueda un d20, el mundo responde.', ir: irReglas, off: false },
   ]
 

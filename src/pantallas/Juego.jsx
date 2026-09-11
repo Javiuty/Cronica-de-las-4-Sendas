@@ -4,7 +4,7 @@ import { BONO_OBJETO, COMBATES, MARCAS, ORDEN_ARMAS, RAREZA, RIESGO, TIPOS_ARMA,
 import {
   ajusteDe, armasDe, combateDe, dificultadDe, lecturaSellos, marcadorDe, oficioDe, riesgoDe, sellosDe,
 } from '../juego/derivados'
-import { imagenObjeto } from '../juego/imagenes'
+import { imagenArma, imagenObjeto } from '../juego/imagenes'
 import './Juego.css'
 
 const ICONO_COMBATE = { cuerpo: IconoEspada, distancia: IconoArco }
@@ -145,13 +145,18 @@ export default function Juego({ s, logRef, elegir, invocar, reintentar, abandona
                 const t = TIPOS_ARMA[tipo]
                 const Icono = ICONO_COMBATE[tipo]
                 const rar = a ? RAREZA[a.rareza] || RAREZA.comun : null
+                const img = a ? imagenArma(a.nombre) : null
                 return (
                   <div
                     key={tipo}
                     className={'placa arma' + (a ? ' arma--con' : ' arma--sin')}
                     title={a ? t.nombre + ': suma +' + a.bono + ' cuando la opción pide ' + COMBATES[tipo].nombre : t.nombre + ': ninguna'}
                   >
-                    <span className="arma__icono"><Icono /></span>
+                    {img ? (
+                      <span className="arma__imagen" style={{ backgroundImage: `url(${img})`, '--rareza': rar.tinta }} aria-hidden="true" />
+                    ) : (
+                      <span className="arma__icono"><Icono /></span>
+                    )}
                     <span className="arma__cuerpo">
                       <span className="arma__tipo">{t.nombre}</span>
                       <span className="arma__nombre" style={a ? { color: rar.tinta } : undefined}>{a ? a.nombre : t.vacio}</span>

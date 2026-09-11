@@ -111,9 +111,9 @@ export default function App() {
 
   return (
     <>
-      <Fondo escena={escena} vivo={enEscena} cielo={cielo} paralaje={enEscena} />
-      <div className={'velo velo--vertical' + (enEscena ? ' velo--suave' : '')} />
-      <div className={'velo velo--radial' + (enEscena ? ' velo--suave' : '')} />
+      <Fondo escena={escena} vivo cielo={cielo} paralaje />
+      <div className="velo velo--vertical velo--suave" />
+      <div className="velo velo--radial velo--suave" />
       <div className={'velo velo--cielo' + (cielo ? ' velo--cielo-' + cielo : '')} />
       {efectosDe(s) && (
         <FondoFX intensidad={intensidad} precipitacion={precipitacion} niebla={nieblaExtra} relampagos={relampagos} />
