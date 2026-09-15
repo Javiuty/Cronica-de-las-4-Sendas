@@ -1,0 +1,56 @@
+name: cronica-4-sendas
+
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-cronica}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cronica}
+      POSTGRES_DB: ${POSTGRES_DB:-cronica}
+    volumes:
+      - datos-postgres:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cronica} -d ${POSTGRES_DB:-cronica}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  backend:
+    build: ./backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-cronica}:${POSTGRES_PASSWORD:-cronica}@db:5432/${POSTGRES_DB:-cronica}
+      JWT_SECRETO: ${JWT_SECRETO:?falta JWT_SECRETO, cópialo de .env.example y genera uno}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      CLAUDE_MODELO: ${CLAUDE_MODELO:-claude-opus-5}
+      ORIGENES_PERMITIDOS: ${ORIGENES_PERMITIDOS:-http://localhost:5173,http://127.0.0.1:5173}
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    volumes:
+      # Desarrollo: el código del host manda, para recargar en caliente.
+      - ./backend:/app
+    command: ["./arranque.sh", "--reload"]
+
+  frontend:
+    build:
+      context: ./frontend
+      target: desarrollo
+    depends_on:
+      - backend
+    environment:
+      # Vite reenvía /api al backend por la red de compose: mismo origen.
+      VITE_PROXY_DESTINO: http://backend:8000
+    ports:
+      - "${FRONTEND_PORT:-5173}:5173"
+    volumes:
+      - ./frontend:/app
+      # Los node_modules del contenedor (Linux), no los del host (macOS).
+      - node-modules:/app/node_modules
+
+volumes:
+  datos-postgres:
+  node-modules:

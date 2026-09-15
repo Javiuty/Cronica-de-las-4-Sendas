@@ -9,6 +9,7 @@ import { establecerAmbiente } from './juego/ambiente'
 import { ambienteDe, efectosDe } from './juego/derivados'
 import { useCronica } from './juego/useCronica'
 import Carga from './pantallas/Carga'
+import Cuenta from './pantallas/Cuenta'
 import Fin from './pantallas/Fin'
 import Juego from './pantallas/Juego'
 import Menu from './pantallas/Menu'
@@ -28,10 +29,12 @@ export default function App() {
       pantalla = (
         <Menu
           haySave={s.haySave}
+          sesion={s.sesion}
           irPersonaje={c.irPersonaje}
           continuar={c.continuar}
           irOpciones={c.irOpciones}
           irReglas={c.irReglas}
+          irCuenta={c.irCuenta}
           onAvivar={setAvivar}
         />
       )
@@ -52,6 +55,17 @@ export default function App() {
       break
     case 'reglas':
       pantalla = <Reglas irPersonaje={c.irPersonaje} irMenu={c.irMenu} />
+      break
+    case 'cuenta':
+      pantalla = (
+        <Cuenta
+          s={s}
+          entrar={c.entrar}
+          registrarse={c.registrarse}
+          salir={c.salir}
+          irMenu={c.irMenu}
+        />
+      )
       break
     case 'personaje':
       pantalla = (

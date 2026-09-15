@@ -1,9 +1,10 @@
 import './Menu.css'
 
-export default function Menu({ haySave, irPersonaje, continuar, irOpciones, irReglas, onAvivar }) {
+export default function Menu({ haySave, sesion, irPersonaje, continuar, irOpciones, irReglas, irCuenta, onAvivar }) {
   const entradas = [
     { titulo: 'Nuevo juego', nota: 'Forja un personaje y sal al camino.', ir: irPersonaje, off: false },
     { titulo: 'Continuar', nota: haySave ? 'Retoma la crónica donde la dejaste.' : 'No hay ninguna crónica guardada.', ir: continuar, off: !haySave },
+    { titulo: 'Cuenta', nota: sesion ? sesion.usuario.nombre + ' · tus crónicas cerradas.' : 'Tus crónicas cerradas.', ir: irCuenta, off: false },
     { titulo: 'Opciones', nota: 'Sonido, dificultad, duración y sellos.', ir: irOpciones, off: false },
     { titulo: 'Cómo se juega', nota: 'Eliges, rueda un d20, el mundo responde.', ir: irReglas, off: false },
   ]

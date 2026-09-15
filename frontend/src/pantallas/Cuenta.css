@@ -1,0 +1,188 @@
+/* =========================================================================
+   Cuenta: el portal de entrada y, ya dentro, la ficha con las crónicas
+   ========================================================================= */
+
+/* ---- El portal: portada a la izquierda, formulario a la derecha --------- */
+
+.portal {
+  animation-duration: 0.6s;
+}
+.tablilla--portal {
+  justify-self: stretch;
+  max-width: 460px;
+  width: 100%;
+  animation: tablilla-surgir 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: 120ms;
+}
+.tablilla--portal .cuenta__enviar {
+  align-self: stretch;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .portal {
+    grid-template-columns: 1fr;
+    align-content: center;
+    gap: 5vh;
+  }
+  .portal .menu__titulo { font-size: clamp(34px, 9vw, 54px); }
+  .portal .menu__lema p { font-size: 16px; }
+  .tablilla--portal { max-width: none; justify-self: stretch; }
+}
+
+.cuenta-lienzo {
+  padding: 2.5vh 5vw 3vh;
+}
+.tablilla--cuenta {
+  max-width: 620px;
+  margin-block: auto;
+  animation: tablilla-surgir 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.cuenta__cabecera .raya--panel {
+  margin: 14px 0 18px;
+}
+
+.cuenta__lema {
+  margin: 0 0 20px;
+  font-family: var(--serif);
+  font-size: 16px;
+  line-height: 1.6;
+  color: rgba(223, 233, 240, 0.72);
+}
+
+.cuenta__modos {
+  margin-bottom: 22px;
+}
+
+/* ---- El formulario ------------------------------------------------------ */
+
+.cuenta__forma {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.campo__etiqueta {
+  font-family: var(--titulo);
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(236, 208, 111, 0.82);
+}
+.campo__caja {
+  padding: 11px 13px;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.34);
+  border: 1px solid rgba(236, 208, 111, 0.26);
+  color: var(--marfil);
+  font-family: var(--serif);
+  font-size: 16.5px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.campo__caja:focus {
+  outline: none;
+  border-color: rgba(236, 208, 111, 0.66);
+  box-shadow: 0 0 0 1px rgba(236, 208, 111, 0.22);
+}
+.campo__nota {
+  font-family: var(--serif);
+  font-size: 13.5px;
+  color: rgba(223, 233, 240, 0.5);
+}
+
+.cuenta__error {
+  margin: 2px 0 0;
+  font-family: var(--serif);
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--rojo);
+}
+
+.cuenta__enviar {
+  margin-top: 6px;
+  align-self: flex-start;
+}
+
+/* ---- Historial ---------------------------------------------------------- */
+
+.cuenta__seccion {
+  margin: 4px 0 12px;
+  font-family: var(--titulo);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(236, 208, 111, 0.82);
+}
+.cuenta__vacio {
+  margin: 0;
+  font-family: var(--serif);
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: rgba(223, 233, 240, 0.55);
+}
+
+.cronicas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 46vh;
+  overflow-y: auto;
+}
+.cronica {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 5px;
+  padding: 13px 16px;
+  animation: placa-entrar 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(180ms + var(--i, 0) * 70ms);
+}
+.cronica__cabeza {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.cronica__titulo {
+  font-family: var(--titulo);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--oro);
+}
+.cronica__marca {
+  flex: 0 0 auto;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: rgba(223, 233, 240, 0.5);
+}
+.cronica__marca--muerto { color: var(--rojo); }
+.cronica__linea {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: rgba(223, 233, 240, 0.62);
+}
+.cronica__epilogo {
+  margin-top: 3px;
+  font-family: var(--serif);
+  font-size: 15px;
+  line-height: 1.55;
+  color: rgba(223, 233, 240, 0.78);
+}
+
+.cuenta__botonera {
+  justify-content: flex-end;
+}
+
+@media (max-width: 560px) {
+  .cronica__cabeza { flex-direction: column; gap: 3px; }
+}

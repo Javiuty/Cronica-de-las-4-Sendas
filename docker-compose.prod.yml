@@ -1,0 +1,51 @@
+# Despliegue: nginx sirve el juego ya compilado y reenvía /api al backend.
+#
+#   docker compose -f docker-compose.prod.yml up -d --build
+#
+# Ni la base de datos ni el backend publican puertos: solo se llega a ellos
+# desde la red interna. Lo único que asoma al exterior es el puerto web.
+
+name: cronica-4-sendas
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?falta POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?falta POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:?falta POSTGRES_DB}
+    volumes:
+      - datos-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      JWT_SECRETO: ${JWT_SECRETO:?falta JWT_SECRETO}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:?falta ANTHROPIC_API_KEY}
+      CLAUDE_MODELO: ${CLAUDE_MODELO:-claude-opus-5}
+      # El navegador y la API comparten origen, así que CORS no entra en juego.
+      ORIGENES_PERMITIDOS: ${ORIGENES_PERMITIDOS:-}
+
+  web:
+    build:
+      context: ./frontend
+      target: produccion
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${PUERTO_WEB:-80}:80"
+
+volumes:
+  datos-postgres:

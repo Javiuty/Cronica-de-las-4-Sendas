@@ -1,14 +1,17 @@
-// Toda la lógica de la partida en un hook: fases, tiradas, inventario,
-// guardado en localStorage y la conversación con el cronista.
+// Toda la lógica de la partida en un hook: fases, tiradas, inventario, la
+// cuenta del jugador, el guardado (local y en el servidor, ver almacen.js) y la
+// conversación con el cronista.
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { BONO_OBJETO, CLAVE, FRASES, NOMBRES, OFICIOS, RASGOS_CERO } from './datos'
-import { ARMAS_VACIAS, ajusteDe, ambienteDe, armaPara, armasDe, arquetipo, combateDe, dificultadDe, efectosDe, largoDe, musicaDe, normalizarArma, sellosVisiblesDe, tonoDe, vidaInicialDe } from './derivados'
+import * as api from './api'
+import { ErrorApi } from './api'
+import { cerrar, guardar, guardarPrefs, instantanea, leerPrefs, leerSave, olvidarLocal, sincronizar, tieneSave, volcarYa } from './almacen'
+import { BONO_OBJETO, FRASES, NOMBRES, OFICIOS, RASGOS_CERO } from './datos'
+import { ARMAS_VACIAS, ajusteDe, ambienteDe, armaPara, armasDe, arquetipo, combateDe, dificultadDe, efectosDe, largoDe, musicaDe, normalizarArma, sellosVisiblesDe, vidaInicialDe } from './derivados'
 import { pedirCronica } from './cronista'
 import { pulirRespuesta } from './estilo'
 import { establecerMusica } from './musica'
-
-const CLAVE_PREFS = 'cronica-cuatro-sendas-prefs'
+import { borrarSesion, guardarSesion, leerSesion } from './sesion'
 
 export const ESTADO_INICIAL = {
   fase: 'menu', turno: 0, vida: 10, vidaMax: 10, oro: 8,
@@ -19,48 +22,7 @@ export const ESTADO_INICIAL = {
   nombre: '', oficio: 0, objetoIni: 0, retrato: 0,
   optDificultad: null, optDuracion: null, optSellos: null, optMusica: null, optEfectos: null, optAmbiente: null,
   cargaPct: 0, cargaFrase: FRASES[0],
-}
-
-const PREFS = ['optDificultad', 'optDuracion', 'optSellos', 'optMusica', 'optEfectos', 'optAmbiente']
-
-// ---- localStorage -----------------------------------------------------------
-
-function tieneSave() {
-  try { return !!localStorage.getItem(CLAVE) } catch { return false }
-}
-function leerSave() {
-  try { return JSON.parse(localStorage.getItem(CLAVE) || 'null') } catch { return null }
-}
-function borrarSave() {
-  try { localStorage.removeItem(CLAVE) } catch { /* sin almacenamiento */ }
-}
-function guardar(s) {
-  try {
-    localStorage.setItem(CLAVE, JSON.stringify({
-      turno: s.turno, vida: s.vida, vidaMax: s.vidaMax, oro: s.oro, inv: s.inv,
-      armas: s.armas, rasgos: s.rasgos, lugar: s.lugar, ambiente: s.ambiente,
-      prosa: s.prosa, opciones: s.opciones, log: s.log, escena: s.escena, gastados: s.gastados,
-      full: s.full, nombre: s.nombre, oficio: s.oficio, objetoIni: s.objetoIni, retrato: s.retrato,
-      optDificultad: s.optDificultad, optDuracion: s.optDuracion, optSellos: s.optSellos,
-    }))
-  } catch { /* sin almacenamiento */ }
-}
-
-// Preferencias (música, dificultad, etc.) que sobreviven entre sesiones.
-function leerPrefs() {
-  try {
-    const p = JSON.parse(localStorage.getItem(CLAVE_PREFS) || '{}')
-    const out = {}
-    PREFS.forEach((k) => { if (p[k] !== undefined) out[k] = p[k] })
-    return out
-  } catch { return {} }
-}
-function guardarPrefs(s) {
-  try {
-    const p = {}
-    PREFS.forEach((k) => { p[k] = s[k] })
-    localStorage.setItem(CLAVE_PREFS, JSON.stringify(p))
-  } catch { /* sin almacenamiento */ }
+  sesion: null, cuentaCargando: false, cuentaError: null, cronicas: [],
 }
 
 const d20 = () => 1 + Math.floor(Math.random() * 20)
@@ -90,7 +52,11 @@ function armasIniciales(of) {
 // ---- hook -------------------------------------------------------------------
 
 export function useCronica() {
-  const [s, setS] = useState(() => ({ ...ESTADO_INICIAL, ...leerPrefs(), haySave: tieneSave() }))
+  const [s, setS] = useState(() => {
+    const sesion = leerSesion()
+    // Sin cuenta no hay crónica: la puerta del juego es la pantalla de entrar.
+    return { ...ESTADO_INICIAL, ...leerPrefs(), haySave: tieneSave(), sesion, fase: sesion ? 'menu' : 'cuenta' }
+  })
   const patch = useCallback((p) => {
     setS((prev) => ({ ...prev, ...(typeof p === 'function' ? p(prev) : p) }))
   }, [])
@@ -103,6 +69,9 @@ export function useCronica() {
   const intDado = useRef(null)
   const intCarga = useRef(null)
   const ultima = useRef({ eleccion: null, tirada: null })
+  // Sin cuenta se pueden guardar preferencias desde el primer momento; con
+  // cuenta hay que esperar a bajar las del servidor para no pisarlas.
+  const prefsListas = useRef(!leerSesion())
 
   useEffect(() => () => {
     clearInterval(intDado.current)
@@ -114,8 +83,45 @@ export function useCronica() {
     if (s.fase === 'juego' && !s.cargando) guardar(s)
   }, [s])
 
+  // Al cerrar el libro: fuera del guardado y, con cuenta, al historial. Va en un
+  // efecto y no en `aplicar` porque aquí el estado ya trae el último turno.
+  const cerrado = useRef(false)
+  useEffect(() => {
+    if (s.fase !== 'fin') {
+      cerrado.current = false
+      return
+    }
+    if (cerrado.current) return
+    cerrado.current = true
+    cerrar(instantanea(s), { muerto: s.muerto, tituloFinal: s.tituloFinal, epilogo: s.epilogo })
+  }, [s.fase, s.muerto, s.tituloFinal, s.epilogo]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Con sesión abierta: se baja la partida y las preferencias del servidor y se
+  // concilian con las de este navegador (gana la partida más avanzada).
+  useEffect(() => {
+    const sesion = leerSesion()
+    if (!sesion) return undefined
+    let vivo = true
+    sincronizar(sesion)
+      .then(({ partida, preferencias }) => {
+        prefsListas.current = true
+        if (vivo) patch({ haySave: !!partida, ...preferencias })
+      })
+      .catch((e) => {
+        prefsListas.current = true
+        if (e instanceof ErrorApi && e.estado === 401) {
+          borrarSesion()
+          olvidarLocal()
+          if (vivo) patch({ sesion: null, haySave: false, fase: 'cuenta' })
+        }
+      })
+    return () => { vivo = false }
+  }, [patch])
+
   // Preferencias persistentes y música.
-  useEffect(() => { guardarPrefs(s) }, [s.optDificultad, s.optDuracion, s.optSellos, s.optMusica, s.optEfectos, s.optAmbiente]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    guardarPrefs(s, prefsListas.current)
+  }, [s.optDificultad, s.optDuracion, s.optSellos, s.optMusica, s.optEfectos, s.optAmbiente]) // eslint-disable-line react-hooks/exhaustive-deps
   const musica = musicaDe(s)
   useEffect(() => { establecerMusica(musica) }, [musica])
 
@@ -123,6 +129,7 @@ export function useCronica() {
 
   const irMenu = () => {
     if (s.fase === 'juego') guardar(s)
+    volcarYa()
     patch({ fase: 'menu', error: null, haySave: tieneSave() })
   }
   const irPersonaje = () => patch({ fase: 'personaje', error: null })
@@ -209,8 +216,8 @@ export function useCronica() {
     const muerto = vida <= 0
     const fin = !!d.fin || muerto
     const opciones = fin ? [] : Array.isArray(d.opciones) ? d.opciones.slice(0, 4) : []
-
-    if (fin) borrarSave()
+    const tituloFinal = d.titulo || arquetipo(prev)
+    const epilogo = d.epilogo || (muerto ? 'Aquí se detiene la mano que escribía. Nadie recogió el cuerpo, pero la crónica quedó.' : '')
 
     patch({
       turno, vida, oro, inv, armas,
@@ -223,15 +230,15 @@ export function useCronica() {
       fase: fin ? 'fin' : 'juego',
       muerto,
       haySave: fin ? false : prev.haySave,
-      tituloFinal: d.titulo || arquetipo(prev),
-      epilogo: d.epilogo || (muerto ? 'Aquí se detiene la mano que escribía. Nadie recogió el cuerpo, pero la crónica quedó.' : ''),
+      tituloFinal,
+      epilogo,
     })
   }
 
   const pedir = async (snap, eleccion, tirada) => {
     ultima.current = { eleccion, tirada }
     try {
-      const { d, turno } = await pedirCronica(snap, eleccion, tirada, { largo: largoDe(snap), tono: tonoDe(snap) })
+      const { d, turno } = await pedirCronica(snap, eleccion, tirada, { largo: largoDe(snap) })
       // Red de seguridad: arcaísmos que se hayan colado pese a las instrucciones
       const cambios = pulirRespuesta(d)
       if (cambios.length && import.meta.env.DEV) console.info('[cronista] arcaísmos sustituidos:', cambios.join(', '))
@@ -239,6 +246,12 @@ export function useCronica() {
     } catch (e) {
       pararTodo()
       const msg = e && e.amable ? e.message : 'La tinta se corrió (' + ((e && e.message) || 'error') + '). Puedes reintentar.'
+      if (e && e.sesionCaducada) {
+        // La partida queda guardada en local; al volver a entrar se concilia.
+        borrarSesion()
+        patch({ dado: null, cargando: false, error: null, sesion: null, fase: 'cuenta', cuentaError: msg })
+        return
+      }
       patch({ dado: null, cargando: false, error: msg })
     }
   }
@@ -246,7 +259,8 @@ export function useCronica() {
   // ---- acciones de partida --------------------------------------------------
 
   const comenzar = () => {
-    borrarSave()
+    // Solo local: el guardado del servidor se sobrescribe con el primer PUT.
+    olvidarLocal()
     const of = OFICIOS[s.oficio] || OFICIOS[0]
     const ob = of.objetos[s.objetoIni] || of.objetos[0]
     const vida = vidaInicialDe(s)
@@ -285,6 +299,7 @@ export function useCronica() {
 
   const abandonar = () => {
     guardar(s)
+    volcarYa()
     patch({ fase: 'menu', haySave: true })
   }
 
@@ -348,9 +363,55 @@ export function useCronica() {
     patch({ usando: s.usando === nombre ? null : nombre })
   }
 
+  // ---- cuenta ---------------------------------------------------------------
+
+  /** Guarda la sesión, baja lo que hubiera en el servidor y vuelve al menú. */
+  const asentarSesion = async (sesion) => {
+    guardarSesion(sesion)
+    let bajado = { partida: null, preferencias: {} }
+    try {
+      bajado = await sincronizar(sesion)
+    } catch { /* se entra igual: la partida local sigue ahí */ }
+    prefsListas.current = true
+    patch({
+      sesion, cuentaCargando: false, cuentaError: null, fase: 'menu',
+      haySave: !!bajado.partida, ...bajado.preferencias,
+    })
+  }
+
+  const conCuenta = (llamada) => async (datos) => {
+    patch({ cuentaCargando: true, cuentaError: null })
+    try {
+      const r = await llamada(datos)
+      await asentarSesion({ token: r.token, usuario: r.usuario })
+    } catch (e) {
+      patch({ cuentaCargando: false, cuentaError: (e && e.message) || 'No se pudo completar.' })
+    }
+  }
+
+  const registrarse = conCuenta(api.registro)
+  const entrar = conCuenta(api.login)
+
+  const salir = () => {
+    borrarSesion()
+    // El guardado de este navegador era de esa cuenta; queda en el servidor.
+    olvidarLocal()
+    patch({ sesion: null, cronicas: [], cuentaError: null, haySave: false, fase: 'cuenta' })
+  }
+
+  const irCuenta = () => {
+    patch({ fase: 'cuenta', cuentaError: null })
+    const sesion = leerSesion()
+    if (!sesion) return
+    api.historial(sesion.token)
+      .then((cronicas) => patch({ cronicas: cronicas || [] }))
+      .catch(() => {})
+  }
+
   return {
     s, logRef,
-    irMenu, irPersonaje, irOpciones, irReglas,
+    irMenu, irPersonaje, irOpciones, irReglas, irCuenta,
+    registrarse, entrar, salir,
     setNombre, nombreAzar, elegirOficio, elegirObjeto, elegirRetrato, elegirDificultad, elegirDuracion, toggleSellos, toggleMusica, toggleEfectos, toggleAmbiente,
     comenzar, continuar, abandonar, reintentar, elegir, invocar,
   }

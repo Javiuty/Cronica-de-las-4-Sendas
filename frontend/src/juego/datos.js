@@ -5,7 +5,7 @@ export const CLAVE = 'cronica-cuatro-sendas-v2'
 
 // Valores por defecto de la partida.
 export const DEFAULTS = {
-  tono: 'oscuro y realista: la gente es dura, el mundo es sucio y nadie regala nada; pero se cuenta con las palabras de hoy, sin lenguaje antiguo',
+  // El tono del mundo lo pone el servidor: backend/app/cronista/prompt.py
   umbral: 3,
   dificultad: 'justa',
   duracion: 'media',

@@ -25,3 +25,10 @@ dist-ssr
 
 # Claves locales
 .env
+
+# Python / backend
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/

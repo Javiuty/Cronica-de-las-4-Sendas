@@ -8,7 +8,6 @@ export const largoDe = (s) => DURACIONES[duracionClaveDe(s)].turnos
 export const ajusteDe = (s) => DIFICULTADES[dificultadClaveDe(s)].ajuste
 export const vidaInicialDe = (s) => DIFICULTADES[dificultadClaveDe(s)].vida
 export const umbralDe = () => DEFAULTS.umbral
-export const tonoDe = () => DEFAULTS.tono
 export const sellosVisiblesDe = (s) => (s.optSellos === null || s.optSellos === undefined ? DEFAULTS.sellosVisibles : s.optSellos)
 export const efectosDe = (s) => (s.optEfectos === null || s.optEfectos === undefined ? DEFAULTS.efectos : s.optEfectos)
 export const ambienteDe = (s) => (s.optAmbiente === null || s.optAmbiente === undefined ? DEFAULTS.ambiente : s.optAmbiente)
