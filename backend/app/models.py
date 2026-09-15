@@ -7,7 +7,9 @@ El catálogo del juego (oficios, armas, objetos) sigue viviendo en
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, DateTime, ForeignKey, Index, Integer, String, Text, func, text
+from datetime import date
+
+from sqlalchemy import Boolean, Date, DateTime, ForeignKey, Index, Integer, String, Text, func, text
 from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -31,6 +33,18 @@ class Usuario(Base):
     )
 
 
+class UsoDiario(Base):
+    """Cuántas encrucijadas se han escrito hoy, en todo el servidor.
+
+    Vive en la base y no en memoria para que un reinicio no regale el cupo.
+    """
+
+    __tablename__ = "uso_diario"
+
+    dia: Mapped[date] = mapped_column(Date, primary_key=True)
+    llamadas: Mapped[int] = mapped_column(Integer, nullable=False, server_default="0")
+
+
 class Partida(Base):
     """Una crónica. Mientras `terminada` es falsa es la partida en curso."""
 
@@ -52,6 +66,9 @@ class Partida(Base):
 
     # ---- Personaje ------------------------------------------------------------
     nombre: Mapped[str] = mapped_column(String(60), nullable=False, server_default="")
+    # La clave manda («mercenario», «cazador»…): sobrevive a que se reordene o
+    # se amplíe OFICIOS. El índice se conserva como respaldo de partidas viejas.
+    oficio_clave: Mapped[str] = mapped_column(String(30), nullable=False, server_default="")
     oficio: Mapped[int] = mapped_column(Integer, nullable=False, server_default="0")
     objeto_ini: Mapped[int] = mapped_column(Integer, nullable=False, server_default="0")
     retrato: Mapped[int] = mapped_column(Integer, nullable=False, server_default="0")

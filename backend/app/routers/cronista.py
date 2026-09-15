@@ -4,49 +4,48 @@ El prompt y la clave de API viven en el servidor; el cliente no puede mandar
 texto libre al modelo.
 """
 
-import time
-import uuid
-from collections import defaultdict, deque
+import logging
 from typing import Any
 
 import anthropic
 from fastapi import APIRouter, HTTPException, status
 
+from ..config import ajustes
 from ..cronista import CronistaNoDisponible, CronistaSeNego, RespuestaIlegible, pedir_cronica
-from ..deps import UsuarioActual
+from ..deps import SesionDb, UsuarioActual
+from ..limites import Ventana, apuntar_llamada
 from ..schemas import CronicaIn
+
+log = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/cronista", tags=["cronista"])
 
 # Tope por jugador: una encrucijada tarda lo suyo, así que 30 por minuto es de
 # sobra para jugar y corta un cliente desbocado. Es por proceso: con varias
-# réplicas del backend haría falta llevar la cuenta en Redis o en la base.
-LIMITE = 30
-VENTANA = 60.0
-_marcas: dict[uuid.UUID, deque[float]] = defaultdict(deque)
-
-
-def _dentro_del_limite(usuario_id: uuid.UUID) -> bool:
-    ahora = time.monotonic()
-    marcas = _marcas[usuario_id]
-    while marcas and ahora - marcas[0] > VENTANA:
-        marcas.popleft()
-    if not marcas:
-        _marcas.pop(usuario_id, None)
-        marcas = _marcas[usuario_id]
-    if len(marcas) >= LIMITE:
-        return False
-    marcas.append(ahora)
-    return True
+# réplicas del backend haría falta llevarlo a Redis. El techo del gasto, en
+# cambio, va en la base y se cumple siempre (ver `limites.py`).
+_por_usuario = Ventana(ajustes.tope_cronista_por_usuario, 60.0)
 
 
 @router.post("/encrucijada")
-async def encrucijada(peticion: CronicaIn, usuario: UsuarioActual) -> dict[str, Any]:
+async def encrucijada(peticion: CronicaIn, usuario: UsuarioActual, sesion: SesionDb) -> dict[str, Any]:
     """El siguiente fragmento de la crónica, tal cual lo devuelve el modelo."""
-    if not _dentro_del_limite(usuario.id):
+    if not _por_usuario.admite(str(usuario.id)):
         raise HTTPException(
             status_code=status.HTTP_429_TOO_MANY_REQUESTS,
             detail="Demasiadas encrucijadas seguidas. Espera un momento.",
+        )
+
+    # El techo del día, antes de gastar nada.
+    cabe, total = await apuntar_llamada(sesion, ajustes.tope_diario_cronista)
+    if not cabe:
+        log.warning("tope diario alcanzado: %s llamadas (tope %s)", total, ajustes.tope_diario_cronista)
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=(
+                "El cronista ha escrito todo lo que podía escribir hoy. "
+                "Vuelve mañana y seguirá la crónica."
+            ),
         )
 
     try:

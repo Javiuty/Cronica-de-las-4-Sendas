@@ -7,7 +7,7 @@
 
 import * as api from './api'
 import { ErrorApi } from './api'
-import { CLAVE } from './datos'
+import { CLAVE, OFICIOS } from './datos'
 import { leerSesion } from './sesion'
 
 const CLAVE_PREFS = 'cronica-cuatro-sendas-prefs'
@@ -18,14 +18,19 @@ export const PREFS = ['optDificultad', 'optDuracion', 'optSellos', 'optMusica', 
 // Los campos de la partida que se guardan, y solo esos.
 const CAMPOS = [
   'turno', 'vida', 'vidaMax', 'oro', 'inv', 'armas', 'rasgos', 'lugar', 'ambiente',
-  'prosa', 'opciones', 'log', 'escena', 'gastados', 'full', 'nombre', 'oficio',
-  'objetoIni', 'retrato', 'optDificultad', 'optDuracion', 'optSellos',
+  'prosa', 'opciones', 'log', 'escena', 'gastados', 'full', 'nombre',
+  'oficioClave', 'oficio', 'objetoIni', 'retrato',
+  'optDificultad', 'optDuracion', 'optSellos',
 ]
 
 /** La partida reducida a lo que se guarda. Vale igual para el disco y para la API. */
 export function instantanea(s) {
   const out = {}
   for (const k of CAMPOS) out[k] = s[k]
+  // Una partida empezada antes de que se guardara la clave no la trae. Se
+  // deduce del índice ahora, que es cuando OFICIOS todavía coincide con él; si
+  // no, el guardado borraría una clave buena que ya estuviera en el servidor.
+  if (!out.oficioClave) out.oficioClave = (OFICIOS[s.oficio] || OFICIOS[0]).clave
   return out
 }
 

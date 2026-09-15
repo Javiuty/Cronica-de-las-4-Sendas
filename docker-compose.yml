@@ -27,6 +27,9 @@ services:
       JWT_SECRETO: ${JWT_SECRETO:?falta JWT_SECRETO, cópialo de .env.example y genera uno}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
       CLAUDE_MODELO: ${CLAUDE_MODELO:-claude-opus-5}
+      TOPE_DIARIO_CRONISTA: ${TOPE_DIARIO_CRONISTA:-500}
+      TOPE_REGISTROS_POR_IP: ${TOPE_REGISTROS_POR_IP:-5}
+      TOPE_LOGINS_POR_IP: ${TOPE_LOGINS_POR_IP:-20}
       ORIGENES_PERMITIDOS: ${ORIGENES_PERMITIDOS:-http://localhost:5173,http://127.0.0.1:5173}
     ports:
       - "${BACKEND_PORT:-8000}:8000"

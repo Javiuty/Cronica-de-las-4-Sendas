@@ -118,6 +118,8 @@ class PartidaIn(Esquema):
     """Lo que el navegador guardaba en `localStorage`, tal cual."""
 
     nombre: str = Field(default="", max_length=60)
+    # Identidad estable del oficio; `oficio` es solo el índice de respaldo.
+    oficio_clave: str = Field(default="", max_length=30)
     oficio: int = Field(default=0, ge=0, le=99)
     objeto_ini: int = Field(default=0, ge=0, le=99)
     retrato: int = Field(default=0, ge=0, le=99)
@@ -174,6 +176,7 @@ class CronicaResumen(Esquema):
 
     id: uuid.UUID
     nombre: str
+    oficio_clave: str = ""
     oficio: int
     turno: int
     lugar: str

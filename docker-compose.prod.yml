@@ -1,9 +1,13 @@
-# Despliegue: nginx sirve el juego ya compilado y reenvía /api al backend.
+# Despliegue. Detrás de Nginx Proxy Manager: el servicio `web` no publica nada
+# al exterior, NPM lo alcanza por el nombre del contenedor en una red de Docker
+# compartida.
 #
+#   docker network create proxy          # una vez, si aún no existe
 #   docker compose -f docker-compose.prod.yml up -d --build
 #
-# Ni la base de datos ni el backend publican puertos: solo se llega a ellos
-# desde la red interna. Lo único que asoma al exterior es el puerto web.
+# Y en NPM, un Proxy Host que apunte a  web  puerto  80.
+#
+# Ni la base de datos ni el backend salen de la red interna.
 
 name: cronica-4-sendas
 
@@ -17,6 +21,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:?falta POSTGRES_DB}
     volumes:
       - datos-postgres:/var/lib/postgresql/data
+    networks: [interna]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
@@ -34,8 +39,13 @@ services:
       JWT_SECRETO: ${JWT_SECRETO:?falta JWT_SECRETO}
       ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:?falta ANTHROPIC_API_KEY}
       CLAUDE_MODELO: ${CLAUDE_MODELO:-claude-opus-5}
+      TOPE_DIARIO_CRONISTA: ${TOPE_DIARIO_CRONISTA:-500}
+      TOPE_CRONISTA_POR_USUARIO: ${TOPE_CRONISTA_POR_USUARIO:-30}
+      TOPE_REGISTROS_POR_IP: ${TOPE_REGISTROS_POR_IP:-5}
+      TOPE_LOGINS_POR_IP: ${TOPE_LOGINS_POR_IP:-20}
       # El navegador y la API comparten origen, así que CORS no entra en juego.
       ORIGENES_PERMITIDOS: ${ORIGENES_PERMITIDOS:-}
+    networks: [interna]
 
   web:
     build:
@@ -44,8 +54,19 @@ services:
     restart: unless-stopped
     depends_on:
       - backend
+    networks:
+      - interna   # para llegar al backend
+      - proxy     # para que NPM llegue aquí
+    # Solo para mirar desde el propio VPS (túnel SSH). No sale a internet:
+    # de la cara pública se encarga NPM.
     ports:
-      - "${PUERTO_WEB:-80}:80"
+      - "127.0.0.1:${PUERTO_WEB:-8080}:80"
+
+networks:
+  interna:
+  proxy:
+    external: true
+    name: ${RED_PROXY:-proxy}
 
 volumes:
   datos-postgres:

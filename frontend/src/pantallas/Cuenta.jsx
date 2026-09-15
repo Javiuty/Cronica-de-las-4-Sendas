@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { OFICIOS } from '../juego/datos'
+import { indiceGuardado } from '../juego/derivados'
 import './Cuenta.css'
 
 function Campo({ id, etiqueta, tipo = 'text', valor, onChange, autoComplete, nota }) {
@@ -113,19 +114,19 @@ function Cronicas({ cronicas }) {
     return <p className="cuenta__vacio">Todavía no has cerrado ningún libro. La primera crónica que termine aparecerá aquí.</p>
   }
   return (
-    <ul className="cronicas">
+    <ul className="cerradas">
       {cronicas.map((c, i) => (
-        <li key={c.id} className="placa cronica" style={{ '--i': i }}>
-          <span className="cronica__cabeza">
-            <span className="cronica__titulo">{c.tituloFinal || 'Sin nombre'}</span>
-            <span className={'cronica__marca' + (c.muerto ? ' cronica__marca--muerto' : '')}>
+        <li key={c.id} className="placa cerrada" style={{ '--i': i }}>
+          <span className="cerrada__cabeza">
+            <span className="cerrada__titulo">{c.tituloFinal || 'Sin nombre'}</span>
+            <span className={'cerrada__marca' + (c.muerto ? ' cerrada__marca--muerto' : '')}>
               {c.muerto ? 'Murió' : 'Cerró el libro'}
             </span>
           </span>
-          <span className="cronica__linea">
-            {c.nombre || 'Sin nombre'} · {(OFICIOS[c.oficio] || OFICIOS[0]).nombre} · {c.turno} encrucijadas
+          <span className="cerrada__linea">
+            {c.nombre || 'Sin nombre'} · {OFICIOS[indiceGuardado(c)].nombre} · {c.turno} encrucijadas
           </span>
-          {c.epilogo && <span className="cronica__epilogo">{c.epilogo}</span>}
+          {c.epilogo && <span className="cerrada__epilogo">{c.epilogo}</span>}
         </li>
       ))}
     </ul>
@@ -134,6 +135,9 @@ function Cronicas({ cronicas }) {
 
 /** Con sesión abierta: quién eres y qué crónicas has cerrado. */
 function Ficha({ s, salir, irMenu }) {
+  const nombre = s.sesion.usuario.nombre || 'Sin nombre'
+  const cerradas = s.cronicas.length
+
   return (
     <section className="lienzo lienzo--arriba entrar cuenta-lienzo">
       <div className="tablilla tablilla--cuenta">
@@ -141,16 +145,30 @@ function Ficha({ s, salir, irMenu }) {
 
         <header className="cuenta__cabecera">
           <div className="sobretitulo">Tu nombre en el registro</div>
-          <h2 className="tablilla__titulo">{s.sesion.usuario.nombre}</h2>
+          <h2 className="tablilla__titulo">{nombre}</h2>
           <div className="raya raya--60 raya--panel" />
         </header>
 
-        <p className="cuenta__lema">
-          {s.sesion.usuario.correo} · tus partidas y tus opciones viajan contigo.
-        </p>
+        <div className="placa cuenta__ficha">
+          <span className="cuenta__sello" aria-hidden="true">{[...nombre][0].toUpperCase()}</span>
+          <span className="cuenta__ficha-texto">
+            <span className="cuenta__correo">{s.sesion.usuario.correo}</span>
+            <span className="cuenta__nota">
+              Tus partidas y tus opciones viajan contigo: puedes retomar la crónica desde cualquier navegador.
+            </span>
+          </span>
+        </div>
 
-        <h3 className="cuenta__seccion">Crónicas cerradas</h3>
+        <h3 className="cuenta__seccion">
+          <span>Crónicas cerradas</span>
+          {cerradas > 0 && <span className="cuenta__contador">{cerradas}</span>}
+        </h3>
+
         <Cronicas cronicas={s.cronicas} />
+
+        <p className="cuenta__aviso">
+          Al salir, la crónica en curso deja de estar en este navegador, pero sigue guardada en tu cuenta.
+        </p>
 
         <div className="botonera cuenta__botonera">
           <button type="button" className="btn-ghost" onClick={salir}>Salir de la cuenta</button>

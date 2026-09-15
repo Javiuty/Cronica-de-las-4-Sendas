@@ -14,6 +14,20 @@ export const ambienteDe = (s) => (s.optAmbiente === null || s.optAmbiente === un
 export const musicaDe = (s) => (s.optMusica === null || s.optMusica === undefined ? DEFAULTS.musica : s.optMusica)
 export const oficioDe = (s) => OFICIOS[s.oficio] || OFICIOS[0]
 
+/** Índice del oficio a partir de su clave estable; -1 si no la conoce. */
+export const indiceDeClave = (clave) => OFICIOS.findIndex((o) => o.clave === clave)
+
+/**
+ * El oficio de una partida guardada. Manda la clave («mercenario», «cazador»…),
+ * que no se mueve aunque OFICIOS se reordene o crezca; el índice guardado solo
+ * es el respaldo de partidas anteriores a que se guardara la clave.
+ */
+export function indiceGuardado(d) {
+  const i = indiceDeClave(d && d.oficioClave)
+  if (i >= 0) return i
+  return d && OFICIOS[d.oficio] ? d.oficio : 0
+}
+
 /** Número a igualar con el d20, ya con el ajuste de dificultad de la partida. */
 export function dificultadDe(op, ajuste = 0) {
   const r = RIESGO[op.riesgo] ? op.riesgo : 'incierta'

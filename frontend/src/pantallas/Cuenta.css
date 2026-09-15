@@ -109,16 +109,37 @@
   align-self: flex-start;
 }
 
-/* ---- Historial ---------------------------------------------------------- */
+/* ---- Historial ----------------------------------------------------------
+   Ojo con los nombres: `.cronica` ya es el panel flotante de la partida en
+   Juego.css (y va en position:absolute). Estas son las crónicas *cerradas*.
+   ------------------------------------------------------------------------- */
 
 .cuenta__seccion {
-  margin: 4px 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 32px 0 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(236, 208, 111, 0.16);
   font-family: var(--titulo);
   font-weight: 700;
   font-size: 13px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: rgba(236, 208, 111, 0.82);
+}
+.cuenta__contador {
+  display: grid;
+  place-items: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 11px;
+  border: 1px solid rgba(236, 208, 111, 0.34);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0;
+  color: var(--oro);
 }
 .cuenta__vacio {
   margin: 0;
@@ -128,7 +149,7 @@
   color: rgba(223, 233, 240, 0.55);
 }
 
-.cronicas {
+.cerradas {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -138,7 +159,7 @@
   max-height: 46vh;
   overflow-y: auto;
 }
-.cronica {
+.cerrada {
   flex-direction: column;
   align-items: stretch;
   gap: 5px;
@@ -146,32 +167,32 @@
   animation: placa-entrar 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
   animation-delay: calc(180ms + var(--i, 0) * 70ms);
 }
-.cronica__cabeza {
+.cerrada__cabeza {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
 }
-.cronica__titulo {
+.cerrada__titulo {
   font-family: var(--titulo);
   font-weight: 600;
   font-size: 16px;
   color: var(--oro);
 }
-.cronica__marca {
+.cerrada__marca {
   flex: 0 0 auto;
   font-family: var(--mono);
   font-size: 11px;
   letter-spacing: 0.08em;
   color: rgba(223, 233, 240, 0.5);
 }
-.cronica__marca--muerto { color: var(--rojo); }
-.cronica__linea {
+.cerrada__marca--muerto { color: var(--rojo); }
+.cerrada__linea {
   font-family: var(--mono);
   font-size: 12px;
   color: rgba(223, 233, 240, 0.62);
 }
-.cronica__epilogo {
+.cerrada__epilogo {
   margin-top: 3px;
   font-family: var(--serif);
   font-size: 15px;
@@ -179,10 +200,65 @@
   color: rgba(223, 233, 240, 0.78);
 }
 
-.cuenta__botonera {
-  justify-content: flex-end;
+@media (max-width: 560px) {
+  .cerrada__cabeza { flex-direction: column; gap: 3px; }
+  /* Menos margen para que el correo quepa de una pieza. */
+  .tablilla--cuenta { padding-left: 22px; padding-right: 22px; }
+  .cuenta__ficha { padding: 14px 15px; gap: 12px; }
+  .cuenta__sello { width: 32px; height: 32px; font-size: 15px; }
+  .cuenta__correo { font-size: 12px; }
 }
 
-@media (max-width: 560px) {
-  .cronica__cabeza { flex-direction: column; gap: 3px; }
+/* ---- La ficha: quién eres --------------------------------------------- */
+
+.cuenta__cabecera .raya--panel { margin: 16px 0 26px; }
+
+.cuenta__ficha {
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 20px;
+}
+.cuenta__sello {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid rgba(236, 208, 111, 0.45);
+  background: rgba(236, 208, 111, 0.1);
+  font-family: var(--titulo);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--oro);
+}
+.cuenta__ficha-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.cuenta__correo {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: rgba(243, 238, 224, 0.92);
+  overflow-wrap: anywhere;
+}
+.cuenta__nota {
+  font-family: var(--serif);
+  font-size: 15px;
+  line-height: 1.55;
+  color: rgba(223, 233, 240, 0.6);
+}
+
+.cuenta__aviso {
+  margin: 26px 0 0;
+  font-family: var(--serif);
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: rgba(223, 233, 240, 0.5);
+}
+.cuenta__botonera {
+  justify-content: flex-end;
+  margin-top: 18px;
 }

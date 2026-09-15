@@ -27,6 +27,16 @@ class Ajustes(BaseSettings):
     # encrucijada tarde demasiado en llegar.
     claude_esfuerzo: str = "medium"
 
+    # ---- Frenos contra el abuso -----------------------------------------------
+    # Techo de gasto: llamadas al cronista por día en todo el servidor. Es el
+    # único límite que se cumple pase lo que pase; los demás solo filtran.
+    tope_diario_cronista: int = 500
+    # Por jugador, por minuto.
+    tope_cronista_por_usuario: int = 30
+    # Por IP: cuentas nuevas por hora, e intentos de entrar cada cinco minutos.
+    tope_registros_por_ip: int = 5
+    tope_logins_por_ip: int = 20
+
     # ---- CORS -----------------------------------------------------------------
     # Lista separada por comas; el `.env` no tiene que llevar JSON.
     origenes_permitidos: str = "http://localhost:5173,http://127.0.0.1:5173"

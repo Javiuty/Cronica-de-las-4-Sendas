@@ -51,22 +51,75 @@ cd frontend && pnpm install && pnpm dev
 
 ## Desplegar
 
+Pensado para un VPS con **Nginx Proxy Manager** delante. El juego no publica
+nada al exterior: NPM lo alcanza por el nombre del contenedor en una red de
+Docker compartida.
+
 ```bash
+docker network create proxy          # una vez, si aún no existe
+# y añade esa red al contenedor de NPM
+
 git clone … && cd Cronica-de-las-4-Sendas
-cp .env.example .env     # contraseña de Postgres, JWT_SECRETO y ANTHROPIC_API_KEY
+cp .env.example .env                 # contraseña de Postgres, JWT_SECRETO y ANTHROPIC_API_KEY
 docker compose -f docker-compose.prod.yml up -d --build
 ```
 
-Se diferencia del de desarrollo en lo que importa fuera de casa: nginx sirve el juego ya compilado en vez del servidor de Vite, uvicorn va sin `--reload`, todo tiene `restart: unless-stopped` y **ni la base de datos ni el backend publican puertos** — solo se llega a ellos por la red interna de compose. Lo único que asoma es el puerto web.
+En NPM, un **Proxy Host**:
 
-Queda de tu parte:
+| Campo | Valor |
+| --- | --- |
+| Domain Names | tu dominio |
+| Forward Hostname / IP | `web` |
+| Forward Port | `80` |
+| Block Common Exploits | sí |
+| Websockets Support | sí |
 
-- **HTTPS.** El token de sesión viaja en cada petición; sobre HTTP plano se puede interceptar. Pon delante un proxy con certificado (Caddy lo saca de Let's Encrypt solo) y, si lo haces, cambia `PUERTO_WEB` a `127.0.0.1:8080` para que nginx no atienda directamente desde fuera.
-- **Contraseña de Postgres.** Cambia `POSTGRES_PASSWORD`: el ejemplo trae `cronica`.
-- **Cortafuegos.** Deja abiertos solo 80, 443 y el de SSH.
-- **Copias de la base.** `docker compose -f docker-compose.prod.yml exec db pg_dump -U cronica cronica > copia.sql`.
+Y en la pestaña **Advanced**, esto:
 
-Al arrancar, el backend aplica las migraciones pendientes solo, así que actualizar es `git pull` y volver a levantar.
+```nginx
+proxy_read_timeout 180s;
+proxy_send_timeout 180s;
+proxy_connect_timeout 30s;
+```
+
+Hace falta: NPM no fija ningún timeout, así que rige el de nginx, **60 segundos**.
+Escribir una encrucijada tarda entre diez y veinte, y un turno lento al final de
+una partida larga puede acercarse de más al límite.
+
+Solo `web` toca la red del proxy; la base de datos y el backend se quedan en la
+red interna, sin puerto publicado. `web` sí escucha en `127.0.0.1:8080` del
+propio VPS, por si quieres mirar con un túnel SSH; eso no sale a internet.
+
+### DNS: DuckDNS *o* Cloudflare
+
+Son dos capas de DNS y normalmente se usa una:
+
+- **Solo DuckDNS** — `loquesea.duckdns.org`, gratis y siguiendo tu IP aunque
+  cambie. Para el certificado, en NPM elige *Use a DNS Challenge* con el
+  proveedor **DuckDNS** y tu token. No puedes poner Cloudflare por delante: el
+  dominio `duckdns.org` no es tuyo.
+- **Dominio propio en Cloudflare** — registro `A` a la IP del VPS, o `CNAME` a
+  tu nombre de DuckDNS si la IP se mueve (así combinas los dos: DuckDNS
+  persigue la IP y Cloudflare sirve el dominio).
+
+Con Cloudflare, tres cosas:
+
+1. **SSL/TLS en modo *Full (strict)***. En *Flexible* Cloudflare habla HTTP con
+   tu servidor y acabas con bucles de redirección.
+2. **Certificado por DNS Challenge**, no HTTP. Con la nube naranja activada, el
+   reto HTTP-01 de Let's Encrypt no llega a tu NPM. En NPM elige el proveedor
+   Cloudflare y pega un API token con permiso `Zone:DNS:Edit`.
+3. El plan gratuito **corta a los 100 segundos**. Una encrucijada tarda mucho
+   menos, pero si algún día subes el esfuerzo del modelo, tenlo presente.
+
+### Antes de abrirlo al mundo
+
+- **Cambia `POSTGRES_PASSWORD`**: el ejemplo trae `cronica`.
+- **Cortafuegos**: solo 80, 443 y SSH. El 81 de NPM, mejor por túnel.
+- **Copias**: `docker compose -f docker-compose.prod.yml exec db pg_dump -U cronica cronica > copia.sql`.
+
+Al arrancar, el backend aplica las migraciones pendientes solo, así que
+actualizar es `git pull` y volver a levantar.
 
 ## Estructura
 
@@ -116,6 +169,7 @@ frontend/
       Fondo.jsx           fondo de escena con fundido, paralaje y pulso de luz
       Aves.jsx            bandadas cruzando el cielo de día
       Dado.jsx            velo del d20
+      Sesion.jsx          marca de sesión en la esquina: quién eres y por dónde se sale
       Iconos.jsx          iconos SVG de las reglas
     pantallas/
       Menu (+ Menu.css, losas de piedra), Reglas, Opciones y Fin (tablillas con placas),
@@ -131,6 +185,7 @@ El juego pide una cuenta (correo, nombre y contraseña) porque el cronista escri
 - **La partida en curso** se guarda en Postgres además de en `localStorage`. Al abrir el juego se bajan las dos y gana la más avanzada, así que puedes seguir la crónica desde otro ordenador.
 - **Las preferencias** (música, dificultad, duración, sellos, efectos y ambiente) viajan con la cuenta.
 - **Las crónicas cerradas** quedan en un historial con su título, su epílogo y cómo acabaron. Se ven en la pantalla *Cuenta*.
+- **Salir de la sesión** está en la marca de la esquina superior derecha (pide confirmación, porque borra el guardado de este navegador) y también en la pantalla *Cuenta*. La marca no aparece durante la partida, para no estorbar ni provocar sustos.
 - Si el backend no responde, se sigue jugando contra `localStorage` y el guardado sube en cuanto vuelve.
 
 Las contraseñas se guardan con argon2 y la sesión es un JWT de catorce días.
@@ -150,6 +205,36 @@ FastAPI + SQLAlchemy 2 (asíncrono) + PostgreSQL, en `backend/`.
 
 Dos tablas: `usuarios` y `partidas`. Un jugador tiene como mucho una partida sin terminar, y eso lo sostiene un índice único parcial (`UNIQUE (usuario_id) WHERE NOT terminada`), no solo el código. Los datos del juego (oficios, armas, objetos) siguen en `frontend/src/juego/datos.js`: la base solo guarda lo que cambia al jugar.
 
+El oficio del personaje se guarda por su **clave** (`mercenario`, `ladron`, `fraile`, `cazador`), no por su posición en `OFICIOS`. Así se pueden añadir clases nuevas o reordenar la lista sin que las crónicas ya guardadas cambien de oficio en silencio. La columna `oficio` se sigue escribiendo como respaldo para partidas anteriores, y al cargar manda la clave (`indiceGuardado` en `derivados.js`). `objeto_ini` y `retrato` siguen siendo posicionales: el primero solo se usa en el turno 1 y el segundo indexa variantes de retrato, que se añaden al final.
+
+### Frenos contra el abuso
+
+El cronista cuesta dinero de verdad: unos **0,05 $ por encrucijada** (4.639 tokens
+de entrada medidos con `count_tokens`, hasta 0,13 $ si el modelo llena los 4.096
+de salida). Sin frenos, una sola cuenta a pleno gas son ~96 $/hora, y las cuentas
+son gratis. Hay tres capas:
+
+| Freno | Dónde | Por defecto |
+| --- | --- | --- |
+| Encrucijadas por jugador y minuto | memoria del proceso | 30 |
+| Cuentas nuevas por IP y hora | memoria del proceso | 5 |
+| Intentos de entrar por IP cada 5 min | memoria del proceso | 20 |
+| **Encrucijadas por día, en todo el servidor** | **base de datos** | **500** |
+
+Los tres primeros filtran la molestia. El que garantiza el gasto es el cuarto:
+vive en la tabla `uso_diario`, se incrementa con una sola sentencia atómica (20
+peticiones simultáneas dejan el contador exacto) y **no se reinicia al reiniciar
+el contenedor**. Al alcanzarlo, la petición se corta en milisegundos sin llegar
+a llamar al modelo. Todo se ajusta en el `.env`.
+
+La IP se lee de `CF-Connecting-IP` y `X-Forwarded-For`, que es lo que ponen
+Cloudflare y NPM. Son razonables para contar, no son prueba de identidad: quien
+tenga muchas IPs se salta los frenos por IP. Por eso el techo del día no depende
+de ellos.
+
+> Aun así, **pon un límite de gasto en la consola de Anthropic**. Es el único
+> freno que no depende de que este código esté bien.
+
 **El prompt vive en el servidor** (`backend/app/cronista/prompt.py`), no en el navegador. El cliente manda el estado de su partida —validado y con límites de tamaño— y el backend construye la encrucijada. Así nadie puede mandar texto libre al modelo a costa de tu clave. Hay además un tope de 30 peticiones por minuto y jugador.
 
 Migraciones con Alembic; `docker compose up` aplica `alembic upgrade head` antes de arrancar. Para crear una nueva tras tocar `models.py`:
@@ -168,7 +253,7 @@ Cada arma puede llevar **ilustración** (`frontend/src/assets/armas/`): por nomb
 
 ## La pantalla de partida
 
-La ilustración de la escena ocupa toda la pantalla. La crónica flota abajo a la izquierda sobre un degradado que va de transparente a opaco, así el cielo y el horizonte quedan limpios; el registro queda anclado al párrafo más reciente y los anteriores se desvanecen por arriba. La ficha del personaje es un panel traslúcido con desenfoque a la derecha. Todas las pantallas comparten el mismo lenguaje: paneles de cristal oscuro con filo dorado sobre el paisaje, que siempre está vivo (paralaje, pulso de luz, pavesas).
+La ilustración de la escena ocupa toda la pantalla. La crónica flota abajo a la izquierda sobre un degradado que va de transparente a opaco, así el cielo y el horizonte quedan limpios; bajo la columna de la crónica hay además un velo propio que se desvanece hacia arriba y hacia la derecha, para que la cabecera se lea también sobre nieve o arena a mediodía; el registro queda anclado al párrafo más reciente y los anteriores se desvanecen por arriba. La ficha del personaje es un panel traslúcido con desenfoque a la derecha. Todas las pantallas comparten el mismo lenguaje: paneles de cristal oscuro con filo dorado sobre el paisaje, que siempre está vivo (paralaje, pulso de luz, pavesas).
 
 El ambiente responde a la escena que devuelve el cronista (`terreno`, `cielo`):
 
@@ -207,3 +292,4 @@ Desde la raíz:
 - `docker compose logs -f backend` los registros del backend
 - `docker compose down -v` para y borra también la base de datos
 - `docker compose -f docker-compose.prod.yml up -d --build` el despliegue
+- `docker compose -f docker-compose.prod.yml exec db pg_dump -U cronica cronica > copia.sql` copia de la base

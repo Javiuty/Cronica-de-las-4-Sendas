@@ -50,8 +50,10 @@ async function pedir(ruta, { metodo = 'GET', cuerpo, token } = {}) {
   }
 
   if (!r.ok) {
-    // 503 es «el servidor no tiene clave de API»: es un aviso, no una avería.
-    throw new ErrorApi(r.status, detalleDe(datos) || r.statusText || 'error', r.status === 503)
+    // 503 (sin clave, o tope del día alcanzado) y 429 (demasiadas seguidas)
+    // traen un mensaje que se puede enseñar tal cual: son avisos, no averías.
+    const amable = r.status === 503 || r.status === 429
+    throw new ErrorApi(r.status, detalleDe(datos) || r.statusText || 'error', amable)
   }
   return datos
 }

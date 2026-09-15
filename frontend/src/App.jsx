@@ -5,6 +5,7 @@ import Aves from './componentes/Aves'
 import Dado from './componentes/Dado'
 import Fondo from './componentes/Fondo'
 import FondoFX from './componentes/FondoFX'
+import Sesion from './componentes/Sesion'
 import { establecerAmbiente } from './juego/ambiente'
 import { ambienteDe, efectosDe } from './juego/derivados'
 import { useCronica } from './juego/useCronica'
@@ -105,6 +106,10 @@ export default function App() {
 
   const intensidad = s.cargando ? 1 : avivar && s.fase === 'menu' ? 0.95 : 0.6
 
+  // La marca de sesión solo fuera de la partida: jugando estorbaría, y salir
+  // sin querer en mitad de una encrucijada sería un mal rato.
+  const conMarca = s.fase === 'menu' || s.fase === 'opciones' || s.fase === 'reglas'
+
   // Escena actual del cronista (solo en partida y en el cierre): fondo y clima.
   const escena = s.fase === 'juego' || s.fase === 'fin' ? s.escena : null
   const cielo = escena && escena.cielo ? String(escena.cielo).toLowerCase() : null
@@ -135,6 +140,8 @@ export default function App() {
       {efectosDe(s) && enEscena && <Aves cielo={cielo} />}
 
       <div className="escenario">{pantalla}</div>
+
+      {conMarca && <Sesion sesion={s.sesion} irCuenta={c.irCuenta} salir={c.salir} />}
 
       <Dado dado={s.dado} />
     </>

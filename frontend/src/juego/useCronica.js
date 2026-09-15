@@ -7,7 +7,7 @@ import * as api from './api'
 import { ErrorApi } from './api'
 import { cerrar, guardar, guardarPrefs, instantanea, leerPrefs, leerSave, olvidarLocal, sincronizar, tieneSave, volcarYa } from './almacen'
 import { BONO_OBJETO, FRASES, NOMBRES, OFICIOS, RASGOS_CERO } from './datos'
-import { ARMAS_VACIAS, ajusteDe, ambienteDe, armaPara, armasDe, arquetipo, combateDe, dificultadDe, efectosDe, largoDe, musicaDe, normalizarArma, sellosVisiblesDe, vidaInicialDe } from './derivados'
+import { ARMAS_VACIAS, ajusteDe, ambienteDe, armaPara, armasDe, arquetipo, combateDe, dificultadDe, efectosDe, indiceGuardado, largoDe, musicaDe, normalizarArma, sellosVisiblesDe, vidaInicialDe } from './derivados'
 import { pedirCronica } from './cronista'
 import { pulirRespuesta } from './estilo'
 import { establecerMusica } from './musica'
@@ -19,7 +19,7 @@ export const ESTADO_INICIAL = {
   lugar: '', ambiente: '', prosa: '', opciones: [], log: [], full: [],
   escena: null, cargando: false, error: null, epilogo: '', tituloFinal: '', muerto: false,
   haySave: false, dado: null, usando: null, gastados: [],
-  nombre: '', oficio: 0, objetoIni: 0, retrato: 0,
+  nombre: '', oficioClave: '', oficio: 0, objetoIni: 0, retrato: 0,
   optDificultad: null, optDuracion: null, optSellos: null, optMusica: null, optEfectos: null, optAmbiente: null,
   cargaPct: 0, cargaFrase: FRASES[0],
   sesion: null, cuentaCargando: false, cuentaError: null, cronicas: [],
@@ -143,7 +143,7 @@ export function useCronica() {
     const posibles = NOMBRES.filter((n) => n !== prev.nombre)
     return { nombre: posibles[Math.floor(Math.random() * posibles.length)] }
   })
-  const elegirOficio = (i) => patch({ oficio: i, objetoIni: 0, retrato: 0 })
+  const elegirOficio = (i) => patch({ oficio: i, oficioClave: (OFICIOS[i] || OFICIOS[0]).clave, objetoIni: 0, retrato: 0 })
   const elegirRetrato = (i) => patch({ retrato: i })
   const elegirObjeto = (i) => patch({ objetoIni: i })
   const elegirDificultad = (k) => patch({ optDificultad: k })
@@ -266,7 +266,7 @@ export function useCronica() {
     const vida = vidaInicialDe(s)
     const nuevo = {
       ...s,
-      fase: 'carga', turno: 0, vida, vidaMax: vida, oro: of.oro,
+      fase: 'carga', oficioClave: of.clave, turno: 0, vida, vidaMax: vida, oro: of.oro,
       inv: [ob], armas: armasIniciales(of),
       rasgos: { ...RASGOS_CERO },
       lugar: 'El umbral', ambiente: 'antes de la primera línea', prosa: '', opciones: [],
@@ -281,6 +281,10 @@ export function useCronica() {
   const continuar = () => {
     const d = leerSave()
     if (!d) return irPersonaje()
+    // El oficio se resuelve por su clave: así una partida vieja sigue siendo
+    // del oficio que era aunque OFICIOS haya cambiado de orden.
+    d.oficio = indiceGuardado(d)
+    d.oficioClave = OFICIOS[d.oficio].clave
     if (!d.gastados) d.gastados = []
     if (!d.full) d.full = []
     delete d.apariencia
